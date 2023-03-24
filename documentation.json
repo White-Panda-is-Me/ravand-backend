@@ -1,0 +1,72 @@
+{
+    "host": "79.127.1.199",
+    "port": "8080",
+    "description": "Ravand",
+    "endpoints":
+    [
+        {   
+            "name": "Signup",
+            "request":
+            {
+                "name": "Signup",
+                "description": "Creates a new User",
+                "method": "POST",
+                "path": "/auth/signup",
+                "header": { "Content-Type": "application/x-www-form-urlencoded" },
+                "body": 
+                [
+                    "email",
+                    "password",
+                    "fn",
+                    "ln"
+                ]
+            },
+            "response":
+            [
+                "msg",
+                "uuid"
+            ]
+        },
+        {
+            "name": "Finish Signup",
+            "request":
+            {
+                "name": "Finish Signup",
+                "description": "complete user signup",
+                "method": "POST",
+                "path": "/auth/signup/f",
+                "header": { "Content-Type": "application/x-www-form-urlencoded" },
+                "body": 
+                [
+                    "uuid",
+                    "ipass"
+                ]
+            },
+            "response": 
+            [
+                "msg",
+                "jwt"
+            ]
+        },
+        {
+            "name": "Get User By JWT",
+            "request":
+            {
+                "name": "Get User By JWT",
+                "method": "GET",
+                "path": "/users/me",
+                "header": { "Authorization": "jwt_passport"},
+                "body": []
+            },
+            "response":
+            [
+                "email",
+                "id",
+                "CreatedAt",
+                "Activated",
+                "fName",
+                "lName"
+            ]
+        }
+    ]
+}
