@@ -1,12 +1,12 @@
 version: '4.14.1.0'
 services:
-  dev-db1:
+  dev-db:
     image: postgres:13
     ports:
       - 5434:5432
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345678
+      POSTGRES_PASSWORD: 790822lge
       POSTGRES_DB: nest
     networks:
       - backend_host

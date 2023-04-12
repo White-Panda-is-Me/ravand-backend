@@ -28,16 +28,16 @@ export class AuthService {
 
     private async sendAuthMail (name: string ,pass: string ,email: string) {
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
+            host: "smtp.outlook.com",
             port: 587,
             auth: {
-                user: "hlangari1353@gmail.com",
-                pass: "llicxgcjvcoufamn"
-            }
+                user: "Ravand-app@outlook.com",
+                pass: "buqscjtpfqfwvyom"
+            },
         });
 
         const mail = {
-            from: "hlangari1353@gmail.com",
+            from: "ravand-app@outlook.com",
             to: email,
             subject: "Confirm It's You",
             text: `Hello ${name} \nWe've noticed you had signed up in Ravand app.Here's Your Authentication code: ${pass}\nDon't share with with anyone.`
@@ -50,15 +50,16 @@ export class AuthService {
         });
     }
 
-    async signup (dto: Authdto): Promise<{ uuid: string; }> {
+    async signup (dto: Authdto) {
         await this.prisma.user.deleteMany({
             where: {
-                Activated: false,
-                AND: {
-                    time: {
-                        lt: (Math.floor(Date.now() / 60000) - 10)
-                    }
-                }
+                OR:[
+                    {time: {
+                        lt: (Math.floor(Date.now() / 60000) - 10),
+                        not: 0,
+                    }},
+                    {email: dto.email}
+                ]
             }
         });
         try {
@@ -75,11 +76,11 @@ export class AuthService {
                 },
             });
             this.sendAuthMail(dto.fn ,user.signin_password ,dto.email);
-            return { uuid: user.token };
+            return { uuid: user.token ,stat: 200 };
         }catch (err){
             if(err instanceof PrismaClientKnownRequestError){
                 if (err.code === 'P2002') {
-                    throw new ForbiddenException('Creadential taken!');
+                    return { msg: "user exits" ,stat: 404 };
                 }
             }
             throw err;
@@ -92,13 +93,15 @@ export class AuthService {
                 token: dto.token,
             }
         });
-        if (user !== null && Math.floor(Date.now() / 60000) > (user.time + 10)) {
+        if(!user) {
+            return { msg: "user doesn't exist" ,stat: 1}
+        } else if (user !== null && Math.floor(Date.now() / 60000) > (user.time + 10)) {
             await this.prisma.user.delete({
                 where: {
                     id: user.id,
                 }
             });
-            return "uuid expiared!";
+            return { msg: "uuid expiared!", stat: 3 };
         } else {
             if(user !== null && dto.ipass === user.signin_password){
                 await this.prisma.user.update({
@@ -108,7 +111,6 @@ export class AuthService {
                     data: {
                         Activated: true,
                         signin_password: "",
-                        token: "",
                         time: 0,
                     }
                 });
@@ -124,15 +126,23 @@ export class AuthService {
             },
         });
         if(!user)
-            throw new ForbiddenException('Credentail incorrect!');
+            return { msg: "user doesn't exist", stat: 1}
         const pwMatches = await argon.verify(user.hash ,dto.password);
         if(!pwMatches){
-            throw new ForbiddenException('Creadentail incorrect');
+            return { msg: "password incorrect", stat: 403 };
         }
+        await this.prisma.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                Activated: true,
+            }
+        });
         return this.signToken(user.id);
     }
 
-    async signToken(userId: number): Promise<{msg: string ;jwt: string;}>{
+    async signToken(userId: number): Promise<{jwt: string ;stat: number;}>{
         const payload = {
             sub: userId,
         }
@@ -141,6 +151,6 @@ export class AuthService {
             expiresIn: '10m',
             secret: sec,
         });
-        return { msg: "Token Generated" , jwt: token }
+        return { jwt: token, stat: 200 };
     }
 }

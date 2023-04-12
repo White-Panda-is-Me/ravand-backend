@@ -1,0 +1,15 @@
+host: 188.121.108.241
+port: 5000
+req: {
+    method: POST
+    route: "/auth/signup"
+    body: {
+        email,
+        password,
+        fn,
+        ln
+    }
+}
+res: {
+
+}

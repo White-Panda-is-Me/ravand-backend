@@ -1,0 +1,8 @@
+-- DropForeignKey
+ALTER TABLE "Plan" DROP CONSTRAINT "Plan_userUUID_fkey";
+
+-- AlterTable
+ALTER TABLE "Plan" ALTER COLUMN "userUUID" SET DATA TYPE TEXT;
+
+-- AddForeignKey
+ALTER TABLE "Plan" ADD CONSTRAINT "Plan_userUUID_fkey" FOREIGN KEY ("userUUID") REFERENCES "users"("token") ON DELETE RESTRICT ON UPDATE CASCADE;
