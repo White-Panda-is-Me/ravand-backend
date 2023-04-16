@@ -34,20 +34,8 @@ model Plan {
   starts    DateTime
   ends      DateTime
   date      DateTime
-  tasks     Task[]
 
   User      User @relation(fields: [UserId] ,references: [id])
-}
-
-model Task {
-  taskid   String @unique
-
-  name     String
-  imp      Int
-  min      Int
-  planUUID String
-
-  plan     Plan @relation(fields: [planUUID] ,references: [planid]) 
 }
 
 model vers {

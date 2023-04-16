@@ -28,7 +28,7 @@ let total_time = () => {
 function create_i(inp) {
     let inp_dev = Math.floor(inp % 25);
     let inp_dev2 = Math.floor(inp / 25);
-    if(inp_dev > 13) {
+    if(inp_dev > 13 && inp_dev < 20) {
         inp_dev2++;
     }
     return [ inp_dev2 , inp_dev ];
@@ -50,34 +50,40 @@ function split_sort(task) {
                 to = moment(start_time);
                 to.add((itr[1] + 25) ,"minutes")
                 blocked_time[0].subtract(5 ,"minutes");
-                if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
-                    start_time = moment(blocked_time[1])
-                }
                 sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
-                start_time.add((itr[1] + 30) ,"minutes");
-                sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
+                if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
+                    start_time = moment(blocked_time[1]);
+                    start_time.add((itr[1] + 25) ,"minutes");
+                } else {
+                    start_time.add((itr[1] + 30) ,"minutes");
+                    sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
+                }
             } else {
                 to = moment(start_time);
                 to.add(25 ,"minutes")
                 blocked_time[0].subtract(5 ,"minutes");
+                sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
                 if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
                     start_time = moment(blocked_time[1])
+                    start_time.add(30 ,"minutes");
+                } else {
+                    start_time.add(25 ,"minutes");
+                    sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
                 }
-            sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
-            start_time.add(30 ,"minutes");
-            sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
             } 
         }
     } else {
         to = moment(start_time);
         to.add(task.min ,"minutes")
         blocked_time[0].subtract(5 ,"minutes");
+        sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
         if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
             start_time = moment(blocked_time[1])
+            start_time.add(task.min + 5 ,"minutes");
+        } else {
+            start_time.add(task.min ,"minutes");
+            sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
         }
-        sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
-        start_time.add(task.min + 5 ,"minutes");
-        sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
     }
 }
 
