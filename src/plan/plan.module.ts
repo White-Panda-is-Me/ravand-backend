@@ -6,4 +6,4 @@ import { PlanController } from './plan.controller';
   providers: [PlanService],
   controllers: [PlanController],
 })
-export class TaskModule {}
+export class PlanModule {}

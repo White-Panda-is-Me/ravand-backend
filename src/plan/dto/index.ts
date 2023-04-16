@@ -1,1 +1,1 @@
-export * from "./task.dto";
+export * from "./plan.dto";

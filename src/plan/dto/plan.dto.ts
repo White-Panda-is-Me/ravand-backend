@@ -1,13 +1,14 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import * as moment from "moment";
 
 export class PlanDto {
-    @IsString()
-    @IsNotEmpty()
-    uuid: string;
-
-    @IsString()
+    @IsArray()
     @IsOptional()
-    Blocked: string;
+    blocked1: string[];
+    
+    @IsArray()
+    @IsOptional()
+    blocked2: string[];
 
     @IsString()
     @IsNotEmpty()
@@ -17,12 +18,9 @@ export class PlanDto {
     @IsNotEmpty()
     end: string;
 
-    @IsString()
     @IsNotEmpty()
-    name: string;
-
-    @IsNotEmpty()
-    plan: object[];
+    @IsArray()
+    tasks: {name ,imp ,min ,score}[];
 }
 
 export class DelPlanDto {

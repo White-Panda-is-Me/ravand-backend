@@ -29,11 +29,12 @@ model User {
 model Plan {
   planid String @unique
 
-  UserId    Int
-  name      String
-  starts    DateTime
-  ends      DateTime
+  starts    String
+  ends      String
+  blocked1  String[]
+  blocked2  String[]
   date      DateTime
+  UserId    Int
 
   User      User @relation(fields: [UserId] ,references: [id])
 }
