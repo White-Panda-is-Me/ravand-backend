@@ -1,12 +1,13 @@
-import { ForbiddenException, Injectable, Inject } from "@nestjs/common";
+import { ForbiddenException, Injectable, Inject, HttpStatus, HttpException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Authdto , Authindto, FSDto } from "./dto";
 import * as argon from "argon2";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt/dist";
 import { secret } from "./auth.const";
 import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import * as moment from "moment"; 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 @Injectable({})
 export class AuthService {
@@ -26,21 +27,21 @@ export class AuthService {
         return pass;
     }
 
-    private async sendAuthMail (name: string ,pass: string ,email: string) {
+    private async sendAuthMail (pass: string ,email: string) {
         const transporter = nodemailer.createTransport({
-            host: "smtp.outlook.com",
+            host: "smtp.gmail.com",
             port: 587,
             auth: {
-                user: "Ravand-app@outlook.com",
-                pass: "buqscjtpfqfwvyom"
+                user: "hlangari1353@gmail.com",
+                pass: "cxvarvezccwedmxe"
             },
         });
 
         const mail = {
-            from: "ravand-app@outlook.com",
+            from: "hlangari1353@gmail.com",
             to: email,
             subject: "Confirm It's You",
-            text: `Hello ${name} \nWe've noticed you had signed up in Ravand app.Here's Your Authentication code: ${pass}\nDon't share with with anyone.`
+            text: `Hello \nWe've noticed you had signed up in Ravand app.Here's Your Authentication code: ${pass}\nDon't share with with anyone.`
         };
 
         transporter.sendMail(mail ,(error) => {
@@ -49,72 +50,76 @@ export class AuthService {
             }
         });
     }
-
+    
     async signup (dto: Authdto) {
-        await this.prisma.user.deleteMany({
+        await this.prisma.vers.deleteMany({
             where: {
-                OR:[
-                    {time: {
-                        lt: (Math.floor(Date.now() / 60000) - 10),
-                        not: 0,
-                    }},
-                    {email: dto.email}
+                AND:[
+                    { OR:[
+                        {expire: {
+                            lt: new Date(),
+                        }},
+                        {email: dto.email},
+                    ] },
+                    { signed: false }
                 ]
             }
         });
+        const pass = this.genpass();
+        const token = this.GenUUID();
+        this.sendAuthMail(pass ,dto.email);
         try {
-            const hash = await argon.hash(dto.password);
-            const user = await this.prisma.user.create({
+            await this.prisma.vers.create({
                 data: {
+                    code: pass,
                     email: dto.email,
-                    hash,
-                    fName: dto.fn,
-                    lName: dto.ln,
-                    token: this.GenUUID(),
-                    signin_password: this.genpass(),
-                    time: Math.floor(Date.now() / 60000)
-                },
+                    expire: moment().add(5, 'minutes').toDate(),
+                    signed: false,
+                    token
+                }
             });
-            this.sendAuthMail(dto.fn ,user.signin_password ,dto.email);
-            return { uuid: user.token ,stat: 200 };
-        }catch (err){
-            if(err instanceof PrismaClientKnownRequestError){
-                if (err.code === 'P2002') {
-                    return { msg: "user exits" ,stat: 404 };
+            return { token: token };
+        } catch(err) {
+            if(err instanceof PrismaClientKnownRequestError) {
+                if(err.code == 'P2002') {
+                    throw new HttpException("User exists!" ,409);
                 }
             }
-            throw err;
+            console.log(err);
         }
     }
-
+    
     async FinishSignup(dto: FSDto) {
-        const user = await this.prisma.user.findUnique({
+        const vered_user = await this.prisma.vers.findUnique({
             where: {
-                token: dto.token,
+                token: dto.token
             }
         });
-        if(!user) {
-            return { msg: "user doesn't exist" ,stat: 1}
-        } else if (user !== null && Math.floor(Date.now() / 60000) > (user.time + 10)) {
-            await this.prisma.user.delete({
-                where: {
-                    id: user.id,
-                }
-            });
-            return { msg: "uuid expiared!", stat: 3 };
+        if(!vered_user) {
+            return new HttpException("user doesn't exist" ,403);
         } else {
-            if(user !== null && dto.ipass === user.signin_password){
-                await this.prisma.user.update({
+            const hash = await argon.hash(dto.password);
+            if(vered_user.code === dto.ipass && moment().diff(moment(vered_user.expire) ,"milliseconds") < 0){
+                const user = await this.prisma.user.create({
+                    data: {
+                        email: vered_user.email,
+                        fName: dto.fn,
+                        lName: dto.ln,
+                        hash,
+                        UpdatedAt: new Date(),
+                    }
+                });
+                await this.prisma.vers.update({
                     where: {
-                        email: user.email,
+                        token: vered_user.token
                     },
                     data: {
-                        Activated: true,
-                        signin_password: "",
-                        time: 0,
+                        signed: true,
                     }
                 });
                 return this.signToken(user.id);
+            } else {
+                return new HttpException("password doesn't match or is expired!" ,401);
             }
         }
     }
@@ -125,20 +130,27 @@ export class AuthService {
                 email: dto.email
             },
         });
+        const ver = await this.prisma.vers.findUnique({
+            where: {
+                email: dto.email
+            },
+        });
         if(!user)
             return { msg: "user doesn't exist", stat: 1}
         const pwMatches = await argon.verify(user.hash ,dto.password);
         if(!pwMatches){
-            return { msg: "password incorrect", stat: 403 };
+            return new HttpException("password doesn't match" ,403);
         }
-        await this.prisma.user.update({
-            where: {
-                id: user.id,
-            },
-            data: {
-                Activated: true,
-            }
-        });
+        if(!ver.signed) {
+            await this.prisma.vers.update({
+                where: {
+                    id: user.id,
+                },
+                data: {
+                    signed: true,
+                }
+            });
+        }
         return this.signToken(user.id);
     }
 
@@ -148,7 +160,7 @@ export class AuthService {
         }
         const sec = secret.sec;
         const token = await this.jwt.signAsync(payload ,{
-            expiresIn: '10m',
+            expiresIn: '5m',
             secret: sec,
         });
         return { jwt: token, stat: 200 };

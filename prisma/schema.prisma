@@ -11,20 +11,17 @@ datasource db {
 }
 
 model User {
-  email  String @unique
+  email     String @unique
   id        Int @id @default(autoincrement())
   CreatedAt DateTime @default(now())
-  Activated Boolean @default(false)
+  UpdatedAt DateTime
 
   hash String
-  token String @unique
-  signin_password String
-  time Int
 
   fName String
   lName String
 
-  tasks Plan[]
+  plans Plan[]
 
   @@map("users")
 }
@@ -32,14 +29,14 @@ model User {
 model Plan {
   planid String @unique
 
-  userUUID  String
+  UserId    Int
   name      String
   starts    DateTime
   ends      DateTime
   date      DateTime
   tasks     Task[]
 
-  User      User @relation(fields: [userUUID] ,references: [token])
+  User      User @relation(fields: [UserId] ,references: [id])
 }
 
 model Task {
@@ -51,4 +48,13 @@ model Task {
   planUUID String
 
   plan     Plan @relation(fields: [planUUID] ,references: [planid]) 
+}
+
+model vers {
+  id     Int @id @default(autoincrement())
+  token  String @unique
+  email  String @unique
+  signed Boolean
+  expire DateTime
+  code   String
 }

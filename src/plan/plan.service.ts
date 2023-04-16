@@ -6,10 +6,10 @@ import { DelPlanDto, EditPlanDto, GetPlanDto, PlanDto } from './dto';
 export class PlanService {
     constructor(private prisma: PrismaService) {}
     
-    async GetPlans(dto: GetPlanDto) {
+    async GetPlans(dto: GetPlanDto ,userid: number) {
         const plan = await this.prisma.plan.findMany({
             where: {
-                userUUID: dto.usrid
+                UserId: userid
             }
         });
         if(!plan) {
@@ -33,13 +33,13 @@ export class PlanService {
     //     tasks = this.sort_task(dto.plan);
     // }
 
-    async EditPlan(dto: EditPlanDto): Promise<{msg: string}> {
+    async EditPlan(dto: EditPlanDto ,userid: number): Promise<{msg: string}> {
         const plan = await this.prisma.plan.findUnique({
             where :{
                 planid: dto.id,
             }
         });
-        if(dto.usrid === plan.userUUID) {
+        if(userid === plan.UserId) {
             await this.prisma.plan.update({
                 where: {
                     planid: plan.planid,
@@ -55,13 +55,13 @@ export class PlanService {
         }
     }
 
-    async DelPlan(dto: DelPlanDto): Promise<{msg: string}> {
+    async DelPlan(dto: DelPlanDto ,userid: number): Promise<{msg: string}> {
         const plan = await this.prisma.plan.findUnique({
             where :{
                 planid: dto.id,
             }
         });
-        if(dto.usrid === plan.userUUID) {
+        if(userid === plan.UserId) {
             await this.prisma.plan.delete({
                 where: {
                     planid: plan.planid,

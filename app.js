@@ -1,70 +1,99 @@
 const moment = require("moment");
 
-function sort(list) {
-    for(let i = 0;i < list.length;i++) {
-        list[i]["score"] = (list[i]["imp"] + (list[i]["min"] / 15));
-    }
-    list.sort((a ,b) => {
-        return b["score"] - a["score"];
-    });
-}
-
-function split_sort(list) {
-    let total_time = 0;
-    let start = moment("15:00" ,"hh:mm").format("hh:mm");
-    let to;
-    const end = moment("21:00" ,"hh:mm").format("hh:mm");
-    const blocked_time = [moment("17:00", "hh:mm").format("hh:mm") ,moment("18:00" ,"hh:mm").format("hh:mm")];
-    // const rest = {
-    //     "name": "rest",
-    //     "from": null,
-    //     "to": null
-    // }
-
-    let splited_tasks = [];
-    for(let i = 0;i < list.length;i++) {
-        total_time += list[i]["min"];
-    }
-    if(total_time > (Math.abs(moment(start ,"hh:mm").diff(moment(end ,"hh:mm"))) - moment(blocked_time[0] ,"hh:mm").diff(moment(blocked_time[1] ,"hh:mm")))) {
-        console.log("cannot sort because tasks times is not dividable by the tim you've entered");
-        return 0;
-    } else {
-        let it = 0;
-        while(it < list.length) {
-
-            if(list[it]["min"] < 46) {
-                if(moment(start ,"hh:mm").add(list[it]["min"]).isBefore(moment(blocked_time[0] ,"hh:mm"))){
-                    splited_tasks.push({"name": list[it]["name"] ,"from": start,"to": moment(start, "hh:mm").add(list[it]["min"] ,"minutes").format("hh:mm") });
-                    start = moment(start ,"hh:mm").add(list[it]["min"] ,"minutes").format("hh:mm");
-                    splited_tasks.push({"name": "rest" ,"from": start ,"to": moment(start, "hh:mm").add(5 ,"minutes").format("hh:mm") });
-                    start = moment(start ,"hh:mm").add(5 ,"minutes").format("hh:mm");
-                    it += (5+list[it]["min"]);
-                    // console.log(to);
-                } else {
-                    if(Math.abs(moment(start ,"hh:mm").diff(moment(blocked_time[0] ,"hh:mm") ,"minutes")) < 11) {
-                        start = blocked_time[1];
-                    } else {
-                        
-                    }
-                }
-                console.log(splited_tasks);
-            } else {
-                continue;
-            }
-
-            // if(list[it]["min"] == 0) {
-            //     it++;
-            // }
-        }
-    }
-}
-
 let tasks = [
-    {"name": "math", "imp": 10 ,"min": 95},
-    {"name": "arabic", "imp": 15 ,"min": 50},
-    {"name": "coding", "imp": 20 ,"min":37}
+    {"name": "math", "imp": 15 ,"min": 92},
+    {"name": "arabic", "imp": 4 ,"min": 10},
+    {"name": "coding", "imp": 20 ,"min": 70},
+    {"name": "coding2" ,"imp": 12 ,"min" :54},
+    {"name": "coding3" ,"imp": 3 ,"min" :20},
+    {"name": "coding4" ,"imp": 9 ,"min" :19}
 ];
+let start_time = moment("15:00" ,"hh:mm");
+let end_time = moment("23:30" ,"hh:mm");
+let blocked_time = [
+    moment("16:15" ,"hh:mm"),
+    moment("17:15" ,"hh:mm")
+];
+let sorted_list = [];
+let to;
 
-sort(tasks);
-split_sort(tasks);
-// console.log(tasks);
+let total_time = () => {
+    let sum = 0;
+    for(let it = 0;it < tasks.length;it++) {
+        sum += tasks[it]["min"];
+    }
+    return sum;
+}
+
+function create_i(inp) {
+    let inp_dev = Math.floor(inp % 25);
+    let inp_dev2 = Math.floor(inp / 25);
+    if(inp_dev > 13) {
+        inp_dev2++;
+    }
+    return [ inp_dev2 , inp_dev ];
+}
+
+function sort_tasks() {
+    for(let i in tasks) {
+        tasks[i]["score"] = (tasks[i]["min"] / 15) + tasks[i]["imp"];
+    }
+    tasks.sort((a ,b) => b.score - a.score);
+}
+sort_tasks();
+
+function split_sort(task) {
+    let itr = create_i(task.min);
+    if(task.min > 25){
+        for(let i = 0;i < itr[0] ;i++) {
+            if(i === 0) {
+                to = moment(start_time);
+                to.add((itr[1] + 25) ,"minutes")
+                blocked_time[0].subtract(5 ,"minutes");
+                if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
+                    start_time = moment(blocked_time[1])
+                }
+                sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
+                start_time.add((itr[1] + 30) ,"minutes");
+                sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
+            } else {
+                to = moment(start_time);
+                to.add(25 ,"minutes")
+                blocked_time[0].subtract(5 ,"minutes");
+                if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
+                    start_time = moment(blocked_time[1])
+                }
+            sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
+            start_time.add(30 ,"minutes");
+            sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
+            } 
+        }
+    } else {
+        to = moment(start_time);
+        to.add(task.min ,"minutes")
+        blocked_time[0].subtract(5 ,"minutes");
+        if(moment(to).isBetween(moment(blocked_time[0]) ,moment(blocked_time[1]))) {
+            start_time = moment(blocked_time[1])
+        }
+        sorted_list.push({"name": task.name ,"from": start_time.format("hh:mm") ,"to": to.format("hh:mm")});
+        start_time.add(task.min + 5 ,"minutes");
+        sorted_list.push({"name": "rest" ,"from": to.format("hh:mm") ,"to": start_time.format("hh:mm")});
+    }
+}
+
+if((total_time() + (Math.floor(total_time() / 30)) * 5) > (Math.abs(moment(start_time).diff(end_time ,"minutes"))) - (Math.abs(moment(blocked_time[0]).diff(blocked_time[1] ,"minutes")))) {
+
+    tasks.forEach((task) => {
+        split_sort(task);
+    })
+} else {
+    let diff = (Math.abs(moment(start_time).diff(end_time ,"minutes"))) - (Math.abs(moment(blocked_time[0]).diff(blocked_time[1] ,"minutes"))) - (total_time() + (Math.floor(total_time() / 30)) * 5);
+    tasks.forEach((task) => {
+        // task.min -= (Math.floor(diff / tasks.length) + Math.floor(task.min / 25) + 1);
+        split_sort(task);
+    })
+}
+
+sorted_list.pop();
+
+console.log(sorted_list);

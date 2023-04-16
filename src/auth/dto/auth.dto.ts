@@ -5,18 +5,6 @@ export class Authdto{
     @IsEmail()
     @IsString()
     email: string;
-    
-    @IsString()
-    @IsNotEmpty()
-    password: string;
-
-    @IsString()
-    @IsNotEmpty()
-    fn: string;
-
-    @IsString()
-    @IsNotEmpty()
-    ln: string;
 }
 
 export class Authindto{
@@ -32,8 +20,22 @@ export class Authindto{
 
 export class FSDto {
     @IsString()
+    @IsNotEmpty()
     token: string;
 
     @IsString()
+    @IsNotEmpty()
     ipass: string;
+    
+    @IsString()
+    @IsNotEmpty()
+    password: string;
+
+    @IsString()
+    @IsNotEmpty()
+    fn: string;
+
+    @IsString()
+    @IsNotEmpty()
+    ln: string;
 }

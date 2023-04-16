@@ -29,10 +29,6 @@ export class DelPlanDto {
     @IsString()
     @IsNotEmpty()
     id: string;
-
-    @IsString()
-    @IsNotEmpty()
-    usrid: string;
 }
 
 export class EditPlanDto {
