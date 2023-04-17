@@ -167,8 +167,6 @@ export class PlanService {
         }
         
         sorted_list.pop();
-        sorted_list.pop();
-        sorted_list.pop();
 
         return sorted_list;
     }
