@@ -9,7 +9,7 @@ let tasks = [
     {"name": "coding4" ,"imp": 9 ,"min" :19 ,"score": null}
 ];
 let start_time = moment("12:00" ,"HH:mm");
-let end_time = moment("21:00" ,"HH:mm");
+let end_time = moment("20:00" ,"HH:mm");
 let blocked_time = [
     {"name": "hashemi" ,"start": moment("15:30" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")},
     {"name": "hashemi" ,"start": moment("17:30" ,"HH:mm") ,"end": moment("18:30" ,"HH:mm")}
@@ -77,11 +77,6 @@ function split_sort(task) {
                             start_time.add((itr[1] + 5) ,"minutes");
                             sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
                         }
-                    } else {
-                        end_time.add(itr[1]);
-                        const len = end_time.diff(to ,"minutes");
-                        start_time.add(len ,"minutes");
-                        sorted_list.push({"name": task.name ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
                     }
                 }
             } else {
@@ -103,11 +98,6 @@ function split_sort(task) {
                         start_time.add(30 ,"minutes");
                         sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
                     }
-                } else {
-                    end_time.add(25);
-                    const len = end_time.diff(to ,"minutes");
-                    start_time.add(len ,"minutes");
-                    sorted_list.push({"name": task.name ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
                 }
             } 
         }
@@ -131,12 +121,7 @@ function split_sort(task) {
                 start_time.add(task.min + 5 ,"minutes");
                 sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
             }
-        }//  else {
-        //     end_time.add(25);
-        //     const len = end_time.diff(to ,"minutes");
-        //     start_time.add(len ,"minutes");
-        //     sorted_list.push({"name": task.name ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
-        // }
+        }
     }
 }
 
@@ -147,6 +132,11 @@ if(first_diff === 0) {
 } else if(first_diff < 0) {
     tasks.forEach((task) => {
         task.min += Math.floor((Math.abs(first_diff) - (Math.abs(first_diff/30)*5 - 1)) / tasks.length);
+        split_sort(task);
+    })
+} else if(first_diff > 0) {
+    tasks.forEach((task) => {
+        task.min -= Math.floor((Math.abs(first_diff) - (Math.abs(first_diff/30)*5 - 1)) / tasks.length);
         split_sort(task);
     })
 }
