@@ -3,7 +3,7 @@ import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-valid
 export class PlanDto {
     @IsArray()
     @IsOptional()
-    blocked: {name ,start ,end}[];
+    blocked?: {name ,start ,end}[];
 
     @IsString()
     @IsNotEmpty()

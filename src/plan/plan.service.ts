@@ -41,20 +41,22 @@ export class PlanService {
                 planid: uuid(),
             }
         });
-        let start_time = moment(dto.start ,"HH:mm");
-        let end_time = moment(dto.end ,"HH:mm");
+        let start_time = moment(dto.start ,"H:m");
+        let end_time = moment(dto.end ,"H:m");
         let blocked_time = dto.blocked;
-        for(let i = 0;i < blocked_time.length;i++) {
-            blocked_time[i].start = moment(blocked_time[i].start ,"HH:mm");
-            blocked_time[i].end = moment(blocked_time[i].end ,"HH:mm");
-        }
-        blocked_time.sort((a ,b) => a.start.toDate() - b.start.toDate())
-        for(let i = 0;i < blocked_time.length;i++) {
-            for(let j = 0;j < blocked_time.length;j++) {
-                if(i === j){
-                    continue;
-                } else if(blocked_time[i].start.isBetween(blocked_time[j].start ,blocked_time[j].end)){
-                    throw new HttpException("Blocked times can't be in each other!" ,410);
+        if(blocked_time){
+            for(let i = 0;i < blocked_time.length;i++) {
+                blocked_time[i].start = moment(blocked_time[i].start ,"H:m");
+                blocked_time[i].end = moment(blocked_time[i].end ,"H:m");
+            }
+            blocked_time.sort((a ,b) => a.start.toDate() - b.start.toDate())
+            for(let i = 0;i < blocked_time.length;i++) {
+                for(let j = 0;j < blocked_time.length;j++) {
+                    if(i === j){
+                        continue;
+                    } else if(blocked_time[i].start.isBetween(blocked_time[j].start ,blocked_time[j].end)){
+                        throw new HttpException("Blocked times can't be in each other!" ,410);
+                    }
                 }
             }
         }
@@ -68,12 +70,15 @@ export class PlanService {
             }
             return sum;
         }
-        let allblocked = () => {
-            let sum = 0;
-            for(let i = 0;i < blocked_time.length;i++) {
-                sum += Math.abs(blocked_time[blocked_i].start.diff(blocked_time[blocked_i].end ,"minutes"));
+        let allblocked = () => 0;
+        if(blocked_time) {
+            let allblocked = () => {
+                let sum = 0;
+                for(let i = 0;i < blocked_time.length;i++) {
+                    sum += Math.abs(blocked_time[blocked_i].start.diff(blocked_time[blocked_i].end ,"minutes"));
+                }
+                return sum;
             }
-            return sum;
         }
         let first_diff = total_time() - ((Math.abs(start_time.diff(end_time ,"minutes"))) - allblocked());
         function create_i(inp) {
@@ -103,20 +108,20 @@ export class PlanService {
                             end_time.subtract(itr[1]);
                             if(to.isSameOrBefore(end_time)){
                                 end_time.add(itr[1]);
-                                to = moment(start_time ,"HH:mm");
+                                to = moment(start_time ,"H:m");
                                 to.add((itr[1]) ,"minutes");
                                 if(to.isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                                     blocked_time[blocked_i].start.add(5 ,"minutes");
-                                    sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("HH:mm") ,"to": blocked_time[blocked_i].end.format("HH:mm")})
+                                    sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
                                     blocked_time[blocked_i].start.subtract(5 ,"minutes");
                                     start_time = moment(blocked_time[blocked_i].end);
                                     to = start_time;
                                     if(blocked_i < blocked_time.length - 1)
                                     blocked_i++;
                                 } else {
-                                    sorted_list.push({"name": task.name ,"from": start_time.format("HH:mm") ,"to": to.format("HH:mm")});
+                                    sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                     start_time.add((itr[1] + 5) ,"minutes");
-                                    sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
+                                    sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                                 }
                             }
                         }
@@ -124,20 +129,20 @@ export class PlanService {
                         to.subtract(25 ,"minutes");
                         if(to.isSameOrBefore(end_time)){
                             to.add(25 ,"minutes");
-                            to = moment(start_time ,"HH:mm");
+                            to = moment(start_time ,"H:m");
                             to.add(25 ,"minutes");
                             if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                                 blocked_time[blocked_i].start.add(5 ,"minutes");
-                                sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("HH:mm") ,"to": blocked_time[blocked_i].end.format("HH:mm")})
+                                sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
                                 blocked_time[blocked_i].start.subtract(5 ,"minutes");
                                 start_time = moment(blocked_time[blocked_i].end);
                                 to = start_time;
                                 if(blocked_i < blocked_time.length - 1)
                                 blocked_i++;
                             } else {
-                                sorted_list.push({"name": task.name ,"from": start_time.format("HH:mm") ,"to": to.format("HH:mm")});
+                                sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                 start_time.add(30 ,"minutes");
-                                sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
+                                sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                             }
                         }
                     } 
@@ -146,11 +151,11 @@ export class PlanService {
                 end_time.subtract(task.min);
                 if(to.isSameOrBefore(end_time)){
                     end_time.add(task.min);
-                    to = moment(start_time ,"HH:mm");
+                    to = moment(start_time ,"H:m");
                     to.add(task.min ,"minutes")
                     if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                         blocked_time[blocked_i].start.add(5 ,"minutes");
-                        sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("HH:mm") ,"to": blocked_time[blocked_i].end.format("HH:mm")})
+                        sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
                         blocked_time[blocked_i].start.subtract(5 ,"minutes");
                         start_time = moment(blocked_time[blocked_i].end);
                         to = start_time;
@@ -158,9 +163,9 @@ export class PlanService {
                         if(blocked_i < blocked_time.length - 1)
                         blocked_i++;
                     } else {
-                        sorted_list.push({"name": task.name ,"from": start_time.format("HH:mm") ,"to": to.format("HH:mm")});
+                        sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                         start_time.add(task.min + 5 ,"minutes");
-                        sorted_list.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start_time.format("HH:mm")});
+                        sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                     }
                 }
             }
