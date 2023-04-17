@@ -76,9 +76,6 @@ export class PlanService {
             return sum;
         }
         let first_diff = total_time() - ((Math.abs(start_time.diff(end_time ,"minutes"))) - allblocked());
-        console.log(allblocked())
-        console.log(first_diff);
-        console.log(total_time())
         function create_i(inp) {
             let inp_dev = Math.floor(inp % 25);
             let inp_dev2 = Math.floor(inp / 25);
