@@ -51,7 +51,7 @@ export class AuthService {
         });
     }
     
-    async signup (dto: Authdto) {
+    async signup (dto: Authdto) {}
         const pass = this.genpass();
         const token = this.GenUUID();
         this.sendAuthMail(pass ,dto.email);
