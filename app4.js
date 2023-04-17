@@ -34,7 +34,7 @@ function split(tasks) {
 //     split(task);
 // })
 split(task)
-console.log(splited)
+// console.log(splited)
 
 
 
@@ -43,9 +43,7 @@ console.log(splited)
 
 
 
-// let time = moment("21:00" ,"hh:mm");
-// let time1 = moment("20:00" ,"hh:mm");
-// let time2 = moment("22:00" ,"hh:mm");
-// if(time.isBetween(time1 ,time2)) {
-//     console.log("yes")
-// }
+let time = moment("21:00" ,"hh:mm");
+console.log(time)
+time.add(1 ,"day")
+console.log(time)
