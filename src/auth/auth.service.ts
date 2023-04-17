@@ -55,24 +55,33 @@ export class AuthService {
         const pass = this.genpass();
         const token = this.GenUUID();
         this.sendAuthMail(pass ,dto.email);
-        try {
-            await this.prisma.vers.create({
-                data: {
-                    code: pass,
-                    email: dto.email,
-                    expire: moment().add(5, 'minutes').toDate(),
-                    signed: false,
-                    token
-                }
-            });
-            return { token: token };
-        } catch(err) {
-            if(err instanceof PrismaClientKnownRequestError) {
-                if(err.code == 'P2002') {
-                    return new HttpException("User exists!" ,409);
-                }
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
             }
-            console.log(err);
+        });
+        if(!user){
+            try {
+                await this.prisma.vers.create({
+                    data: {
+                        code: pass,
+                        email: dto.email,
+                        expire: moment().add(5, 'minutes').toDate(),
+                        signed: false,
+                        token
+                    }
+                });
+                return { token: token };
+            } catch(err) {
+                if(err instanceof PrismaClientKnownRequestError) {
+                    if(err.code == 'P2002') {
+                        return new HttpException("User exists!" ,409);
+                    }
+                }
+                console.log(err);
+            }
+        } else {
+            return new HttpException("User exists" ,409);
         }
     }
     
@@ -87,24 +96,32 @@ export class AuthService {
         } else {
             const hash = await argon.hash(dto.password);
             if(vered_user.code === dto.ipass && moment().diff(moment(vered_user.expire) ,"milliseconds") < 0){
-                const user = await this.prisma.user.create({
-                    data: {
-                        email: vered_user.email,
-                        fName: dto.fn,
-                        lName: dto.ln,
-                        hash,
-                        UpdatedAt: new Date(),
+                try {
+                    const user = await this.prisma.user.create({
+                        data: {
+                            email: vered_user.email,
+                            fName: dto.fn,
+                            lName: dto.ln,
+                            hash,
+                            UpdatedAt: new Date(),
+                        }
+                    });
+                    await this.prisma.vers.update({
+                        where: {
+                            token: vered_user.token
+                        },
+                        data: {
+                            signed: true,
+                        }
+                    });
+                    return this.signToken(user.id);
+                } catch(err) {
+                    if(err instanceof PrismaClientKnownRequestError) {
+                        if(err.code === "P2002") {
+                            return new HttpException("User Exists" ,409);
+                        }
                     }
-                });
-                await this.prisma.vers.update({
-                    where: {
-                        token: vered_user.token
-                    },
-                    data: {
-                        signed: true,
-                    }
-                });
-                return this.signToken(user.id);
+                }
             } else {
                 return new HttpException("password doesn't match or is expired!" ,403);
             }
