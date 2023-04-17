@@ -75,13 +75,13 @@ export class AuthService {
             } catch(err) {
                 if(err instanceof PrismaClientKnownRequestError) {
                     if(err.code == 'P2002') {
-                        return new HttpException("User exists!" ,409);
+                        throw new HttpException("User exists!" ,409);
                     }
                 }
                 console.log(err);
             }
         } else {
-            return new HttpException("User exists" ,409);
+            throw new HttpException("User exists" ,409);
         }
     }
     
@@ -92,7 +92,7 @@ export class AuthService {
             }
         });
         if(!vered_user) {
-            return new HttpException("user doesn't exist" ,404);
+            throw new HttpException("user doesn't exist" ,404);
         } else {
             const hash = await argon.hash(dto.password);
             if(vered_user.code === dto.ipass && moment().diff(moment(vered_user.expire) ,"milliseconds") < 0){
@@ -118,12 +118,12 @@ export class AuthService {
                 } catch(err) {
                     if(err instanceof PrismaClientKnownRequestError) {
                         if(err.code === "P2002") {
-                            return new HttpException("User Exists" ,409);
+                            throw new HttpException("User Exists" ,409);
                         }
                     }
                 }
             } else {
-                return new HttpException("password doesn't match or is expired!" ,403);
+                throw new HttpException("password doesn't match or is expired!" ,403);
             }
         }
     }
@@ -135,11 +135,11 @@ export class AuthService {
             },
         });
         if(!user)
-            return new HttpException("User doesn't Exists" ,404);
+            throw new HttpException("User doesn't Exists" ,404);
 
         const pwMatches = await argon.verify(user.hash ,dto.password);
         if(!pwMatches){
-            return new HttpException("password doesn't match" ,403);
+            throw new HttpException("password doesn't match" ,403);
         }
         return this.signToken(user.id);
     }
