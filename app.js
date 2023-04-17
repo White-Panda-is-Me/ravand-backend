@@ -11,8 +11,8 @@ let tasks = [
 let start_time = moment("12:00" ,"HH:mm");
 let end_time = moment("20:00" ,"HH:mm");
 let blocked_time = [
-    {"name": "hashemi" ,"start": moment("15:30" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")},
-    {"name": "hashemi" ,"start": moment("17:30" ,"HH:mm") ,"end": moment("18:30" ,"HH:mm")}
+    {"name": "hashemi" ,"start": moment("17:30" ,"HH:mm") ,"end": moment("18:30" ,"HH:mm")},
+    {"name": "hashemi" ,"start": moment("15:30" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")}
 ]
 let sorted_list = [];
 let to = start_time;
@@ -48,7 +48,7 @@ function sort_tasks() {
     }
     tasks.sort((a ,b) => b.score - a.score);
 }
-
+blocked_time.sort((a ,b) => a.start.toDate() - b.start.toDate())
 sort_tasks();
 
 blocked_time[0].start.subtract(5 ,"minutes");

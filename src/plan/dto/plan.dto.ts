@@ -41,17 +41,3 @@ export class EditPlanDto {
     @IsOptional()
     ends?: string;
 }
-
-export class GetPlanDto {
-    @IsString()
-    @IsNotEmpty()
-    usrid: string;
-
-    @IsOptional()
-    @IsNumber()
-    starts: number;
-    
-    @IsOptional()
-    @IsNumber()
-    ends: number;
-}

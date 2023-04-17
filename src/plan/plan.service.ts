@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { DelPlanDto, EditPlanDto, GetPlanDto ,PlanDto } from './dto';
+import { DelPlanDto, EditPlanDto ,PlanDto } from './dto';
 import { v4 as uuid } from "uuid";
 import * as moment from "moment"
 
@@ -8,16 +8,25 @@ import * as moment from "moment"
 export class PlanService {
     constructor(private prisma: PrismaService) {}
     
-    async GetPlans(dto: GetPlanDto ,userid: number) {
-        const plan = await this.prisma.plan.findMany({
+    async GetPlans(userid: number) {
+        const user = await this.prisma.user.findUnique({
             where: {
-                UserId: userid
+                id: userid,
             }
         });
-        if(!plan) {
-            return { plan ,stat: 200 };
+        if(!user) {
+            throw new HttpException("user doesn't exist" ,404)
         } else {
-            return { msg: "user doesn't exist" ,stat: 1 };
+            const plan = await this.prisma.plan.findMany({
+                where: {
+                    UserId: userid
+                }
+            });
+            if(!plan) {
+                throw new HttpException("plan doesn't exist" ,450);
+            } else {
+                return plan;
+            }
         }
     }
 
@@ -38,6 +47,16 @@ export class PlanService {
         for(let i = 0;i < blocked_time.length;i++) {
             blocked_time[i].start = moment(blocked_time[i].start ,"HH:mm");
             blocked_time[i].end = moment(blocked_time[i].end ,"HH:mm");
+        }
+        blocked_time.sort((a ,b) => a.start.toDate() - b.start.toDate())
+        for(let i = 0;i < blocked_time.length;i++) {
+            for(let j = 0;j < blocked_time.length;j++) {
+                if(i === j){
+                    continue;
+                } else if(blocked_time[i].start.isBetween(blocked_time[j].start ,blocked_time[j].end)){
+                    throw new HttpException("Blocked times can't be in each other!" ,410);
+                }
+            }
         }
         let sorted_list = [];
         let to = start_time;

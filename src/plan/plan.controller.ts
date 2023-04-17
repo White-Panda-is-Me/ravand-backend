@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Put ,Post ,Request } from '@nestjs/common';
-import { DelPlanDto, EditPlanDto, GetPlanDto, PlanDto } from './dto';
+import { Body, Controller, Get ,Post ,Request } from '@nestjs/common';
+import { PlanDto } from './dto';
 import { PlanService } from './plan.service';
 import { AuthUser } from "./decorator/dec.plan";
 
@@ -24,7 +24,7 @@ export class PlanController {
     // }
 
     @Get("all")
-    GetTasks(@Body() dto: GetPlanDto ,@Request() req) {
-        return this.taskService.GetPlans(dto ,req.user.userid);
+    GetTasks(@AuthUser() id: number) {
+        return this.taskService.GetPlans(id);
     }
 }
