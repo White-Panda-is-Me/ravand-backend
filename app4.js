@@ -43,7 +43,8 @@ split(task)
 
 
 
-let time = moment("21:00" ,"hh:mm");
-console.log(time)
-time.add(1 ,"day")
-console.log(time)
+let time = moment("0:0" ,"H:m");
+console.log(time.format("HH:mm"))
+// console.log(time)
+// time.add(1 ,"day")
+// console.log(time)
