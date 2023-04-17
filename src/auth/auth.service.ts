@@ -54,7 +54,6 @@ export class AuthService {
     async signup (dto: Authdto) {
         const pass = this.genpass();
         const token = this.GenUUID();
-        this.sendAuthMail(pass ,dto.email);
         const user = await this.prisma.user.findUnique({
             where: {
                 email: dto.email
@@ -71,6 +70,7 @@ export class AuthService {
                         token
                     }
                 });
+                this.sendAuthMail(pass ,dto.email);
                 return { token: token };
             } catch(err) {
                 if(err instanceof PrismaClientKnownRequestError) {
