@@ -3,7 +3,7 @@ import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-valid
 export class PlanDto {
     @IsArray()
     @IsOptional()
-    blocked?: object[];
+    blocked?: any[];
 
     @IsString()
     @IsNotEmpty()
@@ -15,7 +15,7 @@ export class PlanDto {
 
     @IsNotEmpty()
     @IsArray()
-    tasks: object[];
+    tasks: any[];
 }
 
 export class DelPlanDto {
