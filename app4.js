@@ -1,17 +1,11 @@
 const moment = require("moment");
 
-let task = //[
-    {"name": "coding" ,"imp": 16 ,"min": 54}//,
-    // {"name": "coding" ,"imp": 16 ,"min": 32},
-    // {"name": "coding" ,"imp": 16 ,"min": 13}
-// ];
+let task = {"name": "coding" ,"imp": 16 ,"min": 136}
 
 function create_i(inp) {
     let inp_dev = Math.floor(inp % 25);
     let inp_dev2 = Math.floor(inp / 25);
-    if(inp_dev > 13 && inp_dev < 20) {
-        inp_dev2++;
-    }
+    inp_dev2++;
     return [ inp_dev2 , inp_dev ];
 }
 let splited = [];
@@ -20,7 +14,8 @@ function split(tasks) {
     if(task.min > 25){
         for(let i = 0;i < itr[0];i++) {
             if(i === 0) {
-                splited.push({"min": itr[1] + 25});
+                if(itr[1] > 9)
+                    splited.push({"min": itr[1]});
             } else {
                 splited.push({"min": 25});
             }
@@ -31,6 +26,20 @@ function split(tasks) {
     console.log(itr[0])
 }
 // task.forEach((task) => {
-    split(task);
+    // split(task);
 // })
-console.log(splited)
+// console.log(splited)
+
+
+
+
+
+
+
+
+let time = moment("21:00" ,"hh:mm");
+let time1 = moment("20:00" ,"hh:mm");
+let time2 = moment("22:00" ,"hh:mm");
+if(time.isBetween(time1 ,time2)) {
+    console.log("yes")
+}

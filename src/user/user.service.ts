@@ -14,7 +14,7 @@ export class UserService {
             }
         });
         if(!user) {
-            return new HttpException("user doesn't exist!" ,1);
+            return new HttpException("user doesn't exist!" ,404);
         } else {
             await this.prisma.user.update({
                 where: {
@@ -26,6 +26,5 @@ export class UserService {
                 }
             });
         }
-        return new HttpException("OK" ,200);
     }
 }

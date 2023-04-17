@@ -7,6 +7,6 @@ export const AuthUser = createParamDecorator(
     const jwtService = new JwtService({ secret: 'super-secret' });
     const token = request.headers.authorization.split(' ')[1];
     const payload = jwtService.verify(token);
-    return payload;
+    return payload.sub;
   },
 );

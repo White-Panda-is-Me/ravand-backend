@@ -8,9 +8,9 @@ export class PlanController {
     constructor(private taskService: PlanService) {}
 
     @Post("create")
-    async Create(@Body() dto: PlanDto ,@AuthUser() id: number) {
+    Create(@Body() dto: PlanDto ,@AuthUser() id: number) {
         console.log(id)
-        return await this.taskService.CreatePlan(dto ,id);
+        return this.taskService.CreatePlan(dto ,id);
     }
 
     // @Put("edit")

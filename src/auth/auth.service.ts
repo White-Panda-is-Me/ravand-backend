@@ -52,19 +52,6 @@ export class AuthService {
     }
     
     async signup (dto: Authdto) {
-        await this.prisma.vers.deleteMany({
-            where: {
-                AND:[
-                    { OR:[
-                        {expire: {
-                            lt: new Date(),
-                        }},
-                        {email: dto.email},
-                    ] },
-                    { signed: false }
-                ]
-            }
-        });
         const pass = this.genpass();
         const token = this.GenUUID();
         this.sendAuthMail(pass ,dto.email);
@@ -82,7 +69,7 @@ export class AuthService {
         } catch(err) {
             if(err instanceof PrismaClientKnownRequestError) {
                 if(err.code == 'P2002') {
-                    throw new HttpException("User exists!" ,409);
+                    return new HttpException("User exists!" ,409);
                 }
             }
             console.log(err);
@@ -96,7 +83,7 @@ export class AuthService {
             }
         });
         if(!vered_user) {
-            return new HttpException("user doesn't exist" ,403);
+            return new HttpException("user doesn't exist" ,404);
         } else {
             const hash = await argon.hash(dto.password);
             if(vered_user.code === dto.ipass && moment().diff(moment(vered_user.expire) ,"milliseconds") < 0){
@@ -119,7 +106,7 @@ export class AuthService {
                 });
                 return this.signToken(user.id);
             } else {
-                return new HttpException("password doesn't match or is expired!" ,401);
+                return new HttpException("password doesn't match or is expired!" ,403);
             }
         }
     }
@@ -130,31 +117,17 @@ export class AuthService {
                 email: dto.email
             },
         });
-        const ver = await this.prisma.vers.findUnique({
-            where: {
-                email: dto.email
-            },
-        });
         if(!user)
-            return { msg: "user doesn't exist", stat: 1}
+            return new HttpException("User doesn't Exists" ,404);
+
         const pwMatches = await argon.verify(user.hash ,dto.password);
         if(!pwMatches){
             return new HttpException("password doesn't match" ,403);
         }
-        if(!ver.signed) {
-            await this.prisma.vers.update({
-                where: {
-                    id: user.id,
-                },
-                data: {
-                    signed: true,
-                }
-            });
-        }
         return this.signToken(user.id);
     }
 
-    async signToken(userId: number): Promise<{jwt: string ;stat: number;}>{
+    async signToken(userId: number): Promise<{jwt: string}>{
         const payload = {
             sub: userId,
         }
@@ -163,6 +136,6 @@ export class AuthService {
             expiresIn: '30d',
             secret: sec,
         });
-        return { jwt: token, stat: 200 };
+        return { jwt: token };
     }
 }

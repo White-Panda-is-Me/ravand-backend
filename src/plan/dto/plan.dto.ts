@@ -1,14 +1,9 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import * as moment from "moment";
 
 export class PlanDto {
     @IsArray()
     @IsOptional()
-    blocked1: string[];
-    
-    @IsArray()
-    @IsOptional()
-    blocked2: string[];
+    blocked: {name ,start ,end}[];
 
     @IsString()
     @IsNotEmpty()
