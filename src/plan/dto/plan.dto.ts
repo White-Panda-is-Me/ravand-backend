@@ -2,8 +2,8 @@ import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-valid
 
 export class PlanDto {
     @IsArray()
-    @IsOptional()
-    blocked?: any[];
+    // @IsOptional()
+    blocked: any[];
 
     @IsString()
     @IsNotEmpty()
