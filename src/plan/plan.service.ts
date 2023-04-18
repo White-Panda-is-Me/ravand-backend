@@ -32,15 +32,15 @@ export class PlanService {
 
     async CreatePlan(dto: PlanDto ,usrid: number) {
         let tasks = dto.tasks;
-        await this.prisma.plan.create({
-            data: {
-                UserId: usrid,
-                date: new Date(),
-                ends: dto.end,
-                starts: dto.start,
-                planid: uuid(),
-            }
-        });
+        // await this.prisma.plan.create({
+        //     data: {
+        //         UserId: usrid,
+        //         date: new Date(),
+        //         ends: dto.end,
+        //         starts: dto.start,
+        //         planid: uuid(),
+        //     }
+        // });
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
         let blocked_time = dto.blocked;
@@ -96,9 +96,10 @@ export class PlanService {
         }
         
         sort_tasks();
-        
-        blocked_time[0].start.subtract(5 ,"minutes");
-        blocked_time[1].start.subtract(5 ,"minutes");
+        if(blocked_time) {
+            blocked_time[0].start.subtract(5 ,"minutes");
+            blocked_time[1].start.subtract(5 ,"minutes");
+        }
         function split_sort(task) {
             let itr = create_i(task.min);
             if(task.min > 25){
@@ -109,15 +110,21 @@ export class PlanService {
                             if(to.isSameOrBefore(end_time)){
                                 end_time.add(itr[1]);
                                 to = moment(start_time ,"H:m");
-                                to.add((itr[1]) ,"minutes");
-                                if(to.isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
-                                    blocked_time[blocked_i].start.add(5 ,"minutes");
-                                    sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
-                                    blocked_time[blocked_i].start.subtract(5 ,"minutes");
-                                    start_time = moment(blocked_time[blocked_i].end);
-                                    to = start_time;
-                                    if(blocked_i < blocked_time.length - 1)
-                                    blocked_i++;
+                                if(blocked_time) {
+                                    to.add((itr[1]) ,"minutes");
+                                    if(to.isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
+                                        blocked_time[blocked_i].start.add(5 ,"minutes");
+                                        sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
+                                        blocked_time[blocked_i].start.subtract(5 ,"minutes");
+                                        start_time = moment(blocked_time[blocked_i].end);
+                                        to = start_time;
+                                        if(blocked_i < blocked_time.length - 1)
+                                        blocked_i++;
+                                    } else {
+                                        sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
+                                        start_time.add((itr[1] + 5) ,"minutes");
+                                        sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                    }
                                 } else {
                                     sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                     start_time.add((itr[1] + 5) ,"minutes");
@@ -130,15 +137,21 @@ export class PlanService {
                         if(to.isSameOrBefore(end_time)){
                             to.add(25 ,"minutes");
                             to = moment(start_time ,"H:m");
-                            to.add(25 ,"minutes");
-                            if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
-                                blocked_time[blocked_i].start.add(5 ,"minutes");
-                                sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
-                                blocked_time[blocked_i].start.subtract(5 ,"minutes");
-                                start_time = moment(blocked_time[blocked_i].end);
-                                to = start_time;
-                                if(blocked_i < blocked_time.length - 1)
-                                blocked_i++;
+                            if(blocked_time) {
+                                to.add(25 ,"minutes");
+                                if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
+                                    blocked_time[blocked_i].start.add(5 ,"minutes");
+                                    sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
+                                    blocked_time[blocked_i].start.subtract(5 ,"minutes");
+                                    start_time = moment(blocked_time[blocked_i].end);
+                                    to = start_time;
+                                    if(blocked_i < blocked_time.length - 1)
+                                    blocked_i++;
+                                } else {
+                                    sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
+                                    start_time.add(30 ,"minutes");
+                                    sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                }
                             } else {
                                 sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                 start_time.add(30 ,"minutes");
@@ -152,16 +165,22 @@ export class PlanService {
                 if(to.isSameOrBefore(end_time)){
                     end_time.add(task.min);
                     to = moment(start_time ,"H:m");
-                    to.add(task.min ,"minutes")
-                    if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
-                        blocked_time[blocked_i].start.add(5 ,"minutes");
-                        sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
-                        blocked_time[blocked_i].start.subtract(5 ,"minutes");
-                        start_time = moment(blocked_time[blocked_i].end);
-                        to = start_time;
-                        // start_time.add(task.min ,"minutes");
-                        if(blocked_i < blocked_time.length - 1)
-                        blocked_i++;
+                    if(blocked_time) {
+                        to.add(task.min ,"minutes")
+                        if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
+                            blocked_time[blocked_i].start.add(5 ,"minutes");
+                            sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
+                            blocked_time[blocked_i].start.subtract(5 ,"minutes");
+                            start_time = moment(blocked_time[blocked_i].end);
+                            to = start_time;
+                            // start_time.add(task.min ,"minutes");
+                            if(blocked_i < blocked_time.length - 1)
+                            blocked_i++;
+                        } else {
+                            sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
+                            start_time.add(task.min + 5 ,"minutes");
+                            sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                        }
                     } else {
                         sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                         start_time.add(task.min + 5 ,"minutes");

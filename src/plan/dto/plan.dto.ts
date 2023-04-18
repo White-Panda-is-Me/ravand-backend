@@ -1,10 +1,6 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class PlanDto {
-    @IsArray()
-    // @IsOptional()
-    blocked: any[];
-
     @IsString()
     @IsNotEmpty()
     start: string;
@@ -16,6 +12,10 @@ export class PlanDto {
     @IsNotEmpty()
     @IsArray()
     tasks: any[];
+    
+    @IsNotEmpty()
+    @IsArray()
+    blocked: any[];
 }
 
 export class DelPlanDto {
