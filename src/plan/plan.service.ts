@@ -44,6 +44,7 @@ export class PlanService {
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
         let blocked_time = dto.blocked;
+        console.log(blocked_time[0].start)
         if(blocked_time){
             for(let i = 0;i < blocked_time.length;i++) {
                 blocked_time[i].start = moment(blocked_time[i].start ,"H:m");
@@ -123,12 +124,12 @@ export class PlanService {
                                     } else {
                                         sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                         start_time.add((itr[1] + 5) ,"minutes");
-                                        sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                        sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                                     }
                                 } else {
                                     sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                     start_time.add((itr[1] + 5) ,"minutes");
-                                    sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                    sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                                 }
                             }
                         }
@@ -150,12 +151,12 @@ export class PlanService {
                                 } else {
                                     sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                     start_time.add(30 ,"minutes");
-                                    sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                    sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                                 }
                             } else {
                                 sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                                 start_time.add(30 ,"minutes");
-                                sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                                sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                             }
                         }
                     } 
@@ -173,18 +174,17 @@ export class PlanService {
                             blocked_time[blocked_i].start.subtract(5 ,"minutes");
                             start_time = moment(blocked_time[blocked_i].end);
                             to = start_time;
-                            // start_time.add(task.min ,"minutes");
                             if(blocked_i < blocked_time.length - 1)
                             blocked_i++;
                         } else {
                             sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                             start_time.add(task.min + 5 ,"minutes");
-                            sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                            sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                         }
                     } else {
                         sorted_list.push({"name": task.name ,"from": start_time.format("H:m") ,"to": to.format("H:m")});
                         start_time.add(task.min + 5 ,"minutes");
-                        sorted_list.push({"name": "rest" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
+                        sorted_list.push({"name": "استراحت" ,"from": to.format("H:m") ,"to": start_time.format("H:m")});
                     }
                 }
             }
