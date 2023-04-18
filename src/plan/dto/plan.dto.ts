@@ -13,9 +13,9 @@ export class PlanDto {
     @IsArray()
     tasks: any[];
     
-    @IsNotEmpty()
+    @IsOptional()
     @IsArray()
-    blocked: any[];
+    blocked?: any[];
 }
 
 export class DelPlanDto {
