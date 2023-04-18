@@ -9,7 +9,8 @@ export class PlanController {
 
     @Post("create")
     Create(@Body() dto: PlanDto ,@AuthUser() id: number) {
-        console.log(dto.blocked[0]);
+        if(!dto.blocked)
+            console.log(dto.blocked[0]);
         return this.taskService.CreatePlan(dto ,id);
     }
 

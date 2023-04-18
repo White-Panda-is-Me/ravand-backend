@@ -44,7 +44,6 @@ export class PlanService {
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
         let blocked_time = dto.blocked;
-        console.log(blocked_time[0].start)
         if(blocked_time){
             for(let i = 0;i < blocked_time.length;i++) {
                 blocked_time[i].start = moment(blocked_time[i].start ,"H:m");
@@ -98,8 +97,9 @@ export class PlanService {
         
         sort_tasks();
         if(blocked_time) {
-            blocked_time[0].start.subtract(5 ,"minutes");
-            blocked_time[1].start.subtract(5 ,"minutes");
+            blocked_time.map((blocked) => {
+                blocked.start.subtract(5 ,"minutes");
+            })
         }
         function split_sort(task) {
             let itr = create_i(task.min);
