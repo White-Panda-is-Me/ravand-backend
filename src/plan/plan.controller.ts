@@ -10,7 +10,7 @@ export class PlanController {
     @Post("create")
     Create(@Body() dto: PlanDto ,@AuthUser() id: number) {
         console.log(dto);
-        // return this.taskService.CreatePlan(dto ,id);
+        return this.taskService.CreatePlan(dto ,id);
     }
 
     // @Put("edit")
