@@ -52,6 +52,9 @@ export class PlanService {
             blocked_time = dto.blocked;
             isblocked = false;
         }
+        if(isblocked) {
+            console.log("yes")
+        }
         console.log(isblocked);
         if(isblocked){
             for(let i = 0;i < blocked_time.length;i++) {
