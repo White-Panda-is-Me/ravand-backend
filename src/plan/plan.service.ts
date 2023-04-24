@@ -43,8 +43,17 @@ export class PlanService {
         // });
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
-        let blocked_time = dto.blocked;
-        if(blocked_time){
+        let blocked_time;
+        let isblocked: boolean;
+        if(!dto.blocked) {
+            blocked_time = null;
+            isblocked = true;
+        } else {
+            blocked_time = dto.blocked;
+            isblocked = false;
+        }
+        console.log(isblocked);
+        if(isblocked){
             for(let i = 0;i < blocked_time.length;i++) {
                 blocked_time[i].start = moment(blocked_time[i].start ,"H:m");
                 blocked_time[i].end = moment(blocked_time[i].end ,"H:m");
@@ -71,7 +80,7 @@ export class PlanService {
             return sum;
         }
         let allblocked = () => 0;
-        if(blocked_time) {
+        if(isblocked) {
             let allblocked = () => {
                 let sum = 0;
                 for(let i = 0;i < blocked_time.length;i++) {
@@ -96,7 +105,7 @@ export class PlanService {
         }
         
         sort_tasks();
-        if(blocked_time) {
+        if(isblocked) {
             blocked_time.map((blocked) => {
                 blocked.start.subtract(5 ,"minutes");
             })
@@ -111,8 +120,8 @@ export class PlanService {
                             if(to.isSameOrBefore(end_time)){
                                 end_time.add(itr[1]);
                                 to = moment(start_time ,"H:m");
-                                if(blocked_time) {
-                                    to.add((itr[1]) ,"minutes");
+                                to.add((itr[1]) ,"minutes");
+                                if(isblocked) {
                                     if(to.isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                                         blocked_time[blocked_i].start.add(5 ,"minutes");
                                         sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
@@ -138,8 +147,8 @@ export class PlanService {
                         if(to.isSameOrBefore(end_time)){
                             to.add(25 ,"minutes");
                             to = moment(start_time ,"H:m");
-                            if(blocked_time) {
-                                to.add(25 ,"minutes");
+                            to.add(25 ,"minutes");
+                            if(isblocked) {
                                 if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                                     blocked_time[blocked_i].start.add(5 ,"minutes");
                                     sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
@@ -166,8 +175,8 @@ export class PlanService {
                 if(to.isSameOrBefore(end_time)){
                     end_time.add(task.min);
                     to = moment(start_time ,"H:m");
-                    if(blocked_time) {
-                        to.add(task.min ,"minutes")
+                    to.add(task.min ,"minutes")
+                    if(isblocked) {
                         if(moment(to).isBetween(blocked_time[blocked_i].start ,blocked_time[blocked_i].end)) {
                             blocked_time[blocked_i].start.add(5 ,"minutes");
                             sorted_list.push({"name": blocked_time[blocked_i].name ,"from": blocked_time[blocked_i].start.format("H:m") ,"to": blocked_time[blocked_i].end.format("H:m")})
