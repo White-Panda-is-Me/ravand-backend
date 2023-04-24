@@ -43,10 +43,6 @@ export class PlanService {
             blocked_time = dto.blocked;
             isblocked = true;
         }
-        if(isblocked) {
-            console.log("yes")
-        }
-        console.log(isblocked);
         if(isblocked){
             for(let i = 0;i < blocked_time.length;i++) {
                 blocked_time[i].start = moment(blocked_time[i].start ,"H:m");
