@@ -32,25 +32,16 @@ export class PlanService {
 
     async CreatePlan(dto: PlanDto ,usrid: number) {
         let tasks = dto.tasks;
-        // await this.prisma.plan.create({
-        //     data: {
-        //         UserId: usrid,
-        //         date: new Date(),
-        //         ends: dto.end,
-        //         starts: dto.start,
-        //         planid: uuid(),
-        //     }
-        // });
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
         let blocked_time;
         let isblocked: boolean;
-        if(!dto.blocked) {
+        if(dto.blocked.length === 0) {
             blocked_time = null;
-            isblocked = true;
+            isblocked = false;
         } else {
             blocked_time = dto.blocked;
-            isblocked = false;
+            isblocked = true;
         }
         if(isblocked) {
             console.log("yes")
