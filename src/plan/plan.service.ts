@@ -1,7 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DelPlanDto, EditPlanDto ,PlanDto } from './dto';
-import { v4 as uuid } from "uuid";
 import * as moment from "moment"
 
 @Injectable()
@@ -56,6 +55,15 @@ export class PlanService {
                     } else if(blocked_time[i].start.isBetween(blocked_time[j].start ,blocked_time[j].end)){
                         throw new HttpException("Blocked times can't be in each other!" ,410);
                     }
+                }
+            }
+        }
+        if(isblocked) {
+            for(let i = 0;i < blocked_time.length;i++) {
+                if(blocked_time[i].start.isBefore(start_time)) {
+                    throw new HttpException("blocked mustn't be before or after start and end time!" ,412);
+                } else if(blocked_time[i].end.isAfter(end_time)) {
+                    throw new HttpException("blocked mustn't be before or after start and end time!" ,412);
                 }
             }
         }
@@ -205,6 +213,8 @@ export class PlanService {
             })
         }
         
+        sorted_list.pop();
+        sorted_list.pop();
         sorted_list.pop();
 
         return sorted_list;
