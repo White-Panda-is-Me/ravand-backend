@@ -1,7 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DelPlanDto, EditPlanDto ,PlanDto } from './dto';
-import * as moment from "moment"
+import * as moment from "moment";
+import { v4 as uuid } from "uuid";
 
 @Injectable()
 export class PlanService {
@@ -30,6 +31,7 @@ export class PlanService {
     }
 
     async CreatePlan(dto: PlanDto ,usrid: number) {
+        console.log(dto.tasks);
         let tasks = dto.tasks;
         let start_time = moment(dto.start ,"H:m");
         let end_time = moment(dto.end ,"H:m");
