@@ -1,18 +1,16 @@
 const moment = require("moment");
 
 let tasks = [
-    {"name": "math", "imp": 15 ,"min": 92 ,"score": null},
-    {"name": "arabic", "imp": 4 ,"min": 10 ,"score": null},
-    {"name": "coding", "imp": 20 ,"min": 70 ,"score": null},
-    {"name": "coding2" ,"imp": 12 ,"min" :54 ,"score": null},
-    {"name": "coding3" ,"imp": 3 ,"min" :20 ,"score": null},
-    {"name": "coding4" ,"imp": 9 ,"min" :19 ,"score": null}
+    {"name": "riazi" ,"min": 70 ,"imp": 12},
+    {"name": "hello" ,"min": 50 ,"imp": 20},
+    {"name": "farsi" ,"min": 80 ,"imp": 4},
+    {"name": "arabic" ,"min": 120 ,"imp": 13}
 ];
-let start_time = moment("12:00" ,"HH:mm");
-let end_time = moment("20:00" ,"HH:mm");
+let start_time = moment("10:00" ,"HH:mm");
+let end_time = moment("23:00" ,"HH:mm");
 let blocked_time = [
-    {"name": "hashemi" ,"start": moment("17:30" ,"HH:mm") ,"end": moment("18:30" ,"HH:mm")},
-    {"name": "hashemi" ,"start": moment("15:30" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")}
+    {"name": "asd" ,"start": moment("19:00" ,"HH:mm") ,"end": moment("20:00" ,"HH:mm")},
+    {"name": "asd" ,"start": moment("10:00" ,"HH:mm") ,"end": moment("23:00" ,"HH:mm")}
 ]
 let sorted_list = [];
 let to = start_time;
@@ -141,6 +139,10 @@ if(first_diff === 0) {
     })
 }
 
+sorted_list.pop();
+sorted_list.pop();
+sorted_list.pop();
+sorted_list.pop();
 sorted_list.pop();
 sorted_list.pop();
 sorted_list.pop();
