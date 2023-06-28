@@ -8,9 +8,13 @@ import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { PlanController } from './plan/plan.controller';
 import { PlanService } from './plan/plan.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [AuthModule, PrismaModule, PlanModule ,UserModule],
+  imports: [AuthModule, PrismaModule, PlanModule ,UserModule ,ServeStaticModule.forRoot({
+    rootPath: join(__dirname ,".." ,"/src/html"),
+  })],
   controllers: [UserController ,AppController ,PlanController],
   providers: [UserService ,PlanService]
 })

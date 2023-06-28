@@ -8,6 +8,7 @@ import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
 import * as moment from "moment"; 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { Role } from "@prisma/client";
 
 @Injectable({})
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
             from: "hlangari1353@gmail.com",
             to: email,
             subject: "Confirm It's You",
-            text: `Hello \nWe've noticed you had signed up in Ravand app.Here's Your Authentication code: ${pass}\nDon't share with with anyone.`
+            text: `Hello \nWe've noticed you had signed up in Ravand app.Here's Your Authentication code: ${pass}\nDon't share it with anyone!`
         };
 
         transporter.sendMail(mail ,(error) => {
@@ -104,6 +105,7 @@ export class AuthService {
                             lName: dto.ln,
                             hash,
                             UpdatedAt: new Date(),
+                            role: ((dto.role == "child") ? Role.Child : Role.Parent),
                         }
                     });
                     await this.prisma.vers.update({

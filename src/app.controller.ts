@@ -1,9 +1,10 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Post } from "@nestjs/common";
+import { log } from "console";
 
 @Controller('')
 export class AppController{
-    @Get('')
+    @Post('eg')
     print() {
-        return '<div>Hola Man</div>';
+        log("yes: here");
     }
 }

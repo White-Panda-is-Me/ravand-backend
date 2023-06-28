@@ -9,25 +9,42 @@ const moment = require("moment");
 //
 
 let blocked = [
-    {"name": "asd1" ,"start": moment("11:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")},
-    {"name": "asd2" ,"start": moment("14:00" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")}
+    {"name": "bath" ,"start": moment("10:20" ,"HH:mm") ,"end": moment("11:00" ,"HH:mm")},
+    // {"name": "phone" ,"start": moment("12:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")}
 ];
-let start = moment("9:00" ,"HH:mm");
+let start = moment("2:00" ,"HH:mm");
 let start2 = moment(start);
-let end = moment("17:00" ,"HH:mm");
+let end = moment("11:36" ,"HH:mm");
 let to = moment(start);
 let diff = 0;
+let shd_loop = false;
 let tasks = [
-    {"name": "hello" ,"min": 20 ,"imp": 20},
-    {"name": "arabic" ,"min": 120 ,"imp": 13},
-    {"name": "riazi" ,"min": 60 ,"imp": 12},
+    {"name": "پدر هاشمی" ,"min": 60 ,"imp": 1},
+    {"name": "violin" ,"min": 25 ,"imp": 14},
+    {"name": "coding" ,"min": 100 ,"imp": 20},
+    {"name": "پدر جمشیدی" ,"min": 67 ,"imp": 15}
 ];
 let tasks2 = [];
-let blocked2 = [ {"name": "" ,"start": moment() ,"end": moment()} ];
+let blocked2 = [];
 let sorted_tasks = [];
 let m_itr = 0;
 let g_diff = 0;
 let break_flag = false;
+
+
+function edit_end() {
+    let itr = sorted_tasks.length - 1;
+    let from = moment(sorted_tasks[itr].from ,"HH:mm");
+    let end = moment(sorted_tasks[itr].to ,"HH:mm");
+
+    if(-9 < from.diff(end ,"minutes") < 9) {
+        sorted_tasks.pop();
+        sorted_tasks.pop();
+        itr -= 2;
+        sorted_tasks[itr].to = end.format("HH:mm");
+    }
+}
+
 
 //
 // adjusting the start or end time if they are after or before blocked times
@@ -83,7 +100,7 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         //
 
         let work_len = 25;
-        
+
         //
         // here we check if the whole time of a single task is between 35 and 5
         // if it is, The work_time would be the whole minutes of that task
@@ -106,11 +123,14 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].end))) {
             start.subtract(work_len ,"minutes");
             diff = start.diff(blocked[0].start ,"minutes");
-            
+            // log(diff)
             if (diff > 10) {
                 to = moment(blocked[0].start);
                 to.add(diff ,"minutes");
                 sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
+                if(sorted_tasks[sorted_tasks.length - 2].name == "rest") {
+                    sorted_tasks.splice(sorted_tasks - 2 ,1);
+                }
                 sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                 start = moment(blocked[0].end);
                 to = moment(start);
@@ -127,6 +147,10 @@ for (m_itr = 0;m_itr < 2;m_itr++){
             } else {
                 start = moment(blocked[0].end);
                 to = moment(start);
+                if(sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                    log("yes")
+                    sorted_tasks.splice(1 ,1);
+                }
                 sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                 to.add(work_len ,"minutes");
                 sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
@@ -189,10 +213,10 @@ for (m_itr = 0;m_itr < 2;m_itr++){
     // Then reset all needed variables and from the copied vasiables at the first
     // And the jump rigth at the start of the loop again and continue appending to the sorted_tasks
     //
-
+    
     if(m_itr == 0)
         g_diff = end.diff(to ,"minutes");
-    if(g_diff < 5)
+    if((g_diff < 5 && g_diff > -5) || shd_loop)
         break;
     else
         sorted_tasks = [];
@@ -227,5 +251,7 @@ if(sorted_tasks[sorted_tasks.length - 1].name === "rest") {
 //
 //  printing sorted tasks
 //
+
+edit_end();
 
 log(sorted_tasks);

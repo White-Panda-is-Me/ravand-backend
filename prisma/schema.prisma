@@ -11,32 +11,31 @@ datasource db {
 }
 
 model User {
-  email     String @unique
-  id        Int @id @default(autoincrement())
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime
+  email       String @unique
+  id          Int @id @default(autoincrement())
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime
 
-  hash String
+  hash        String
 
-  fName String
-  lName String
+  fName       String
+  lName       String
+  role        Role
+  plans       Plan[]
 
-  plans Plan[]
+  ParentId    Int?
 
   @@map("users")
 }
 
 model Plan {
-  planid String @unique
+  planid        Int   @id @default(autoincrement())
 
-  starts    String
-  ends      String
-  blocked1  String[]
-  blocked2  String[]
-  date      DateTime
-  UserId    Int
+  date          DateTime  @default(now())
+  Tasks         Json
+  UserId        Int
 
-  User      User @relation(fields: [UserId] ,references: [id])
+  user          User      @relation(fields: [UserId] ,references: [id])
 }
 
 model vers {
@@ -46,4 +45,18 @@ model vers {
   signed Boolean
   expire DateTime
   code   String
+}
+
+model Childreq {
+  id         Int @id @default(autoincrement())
+  ChildId    Int
+  ParentId   Int
+
+  Accepted   Boolean @default(false)
+  Date       DateTime @default(now())
+}
+
+enum Role {
+  Parent
+  Child
 }

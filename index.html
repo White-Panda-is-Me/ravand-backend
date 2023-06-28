@@ -1,0 +1,48 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="text-align: center;">
+    <button style="background-color: rgb(44, 51, 64); border-radius: 4px; color: aliceblue; border-style: none; width: 70px; height: 40px; font-size: medium; font-family: sans-serif;" onclick="acceptReq()">Click!</button>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
+    <!-- <script> -->
+        <!-- async function acceptReq() { -->
+            // axios.put("http://127.0.0.1:5000/users/accept" ,{
+            //     reqid: 3
+            // }, {
+            //     headers: {
+            //         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTY4NzE3NTE2NiwiZXhwIjoxNjg5NzY3MTY2fQ.TvivHZ4verbo-gNwzSomVb1sepIhTc5NJE9sHXL9P_o",
+            //         "Content-Type": "application/json" 
+            //     }
+            // })
+            // .then((response) => {
+            //     console.log(response);
+            // })
+            // .catch((error) => {
+            // console.log(error);
+            // });
+            <!-- const url = "http://127.0.0.1:5000/users/accept"; -->
+            <!-- const data = { reqid: 3 }; -->
+            <!-- const options = { -->
+                <!-- method: 'PUT', -->
+                <!-- headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTY4NzE3NTE2NiwiZXhwIjoxNjg5NzY3MTY2fQ.TvivHZ4verbo-gNwzSomVb1sepIhTc5NJE9sHXL9P_o' ,'Content-Type': 'application/json' }, -->
+                <!-- body: JSON.stringify(data) -->
+            <!-- }; -->
+            <!-- await fetch(url ,options) -->
+                <!-- .then(response => console.log(response)) -->
+                <!-- // .catch(error => console.error(error)); -->
+        <!-- // } -->
+    <!-- // </script> -->
+<!-- </body> -->
+<!-- </html> --> -->
+
+
+<form method="POST" action="http://127.0.0.1:5000/users/accept" 
+      enctype="application/json"
+      accept-charset="UTF-8"
+      headers="{ 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImlhdCI6MTY4NzE2Nzk1MywiZXhwIjoxNjg5NzU5OTUzfQ.qQpafzN8_qM3e94ArkU7r0lh1OddgkDbENKraMMxLiw', 'Content-Type': 'application/json' }">
+      <input type="hidden" name="reqid" value=3>
+  <button type="submit">Click!</button>
+</form>
+

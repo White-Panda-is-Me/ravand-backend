@@ -1,4 +1,4 @@
-import { IsString , IsNotEmpty, IsEmail, IsNumber } from "class-validator";
+import { IsString , IsNotEmpty, IsEmail, IsNumber, IsEnum, IsUUID } from "class-validator";
 
 export class Authdto{
     @IsNotEmpty()
@@ -38,4 +38,14 @@ export class FSDto {
     @IsString()
     @IsNotEmpty()
     ln: string;
+
+    @IsNotEmpty()
+    @IsString()
+    role: string;
+}
+
+export class ChildPlanDto {
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
 }

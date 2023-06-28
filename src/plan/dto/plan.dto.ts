@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class PlanDto {
     @IsString()
@@ -16,12 +16,16 @@ export class PlanDto {
     @IsNotEmpty()
     @IsArray()
     blocked: any[];
+
+    @IsBoolean()
+    @IsNotEmpty()
+    loop: boolean;
 }
 
 export class DelPlanDto {
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    id: string;
+    id: number;
 }
 
 export class EditPlanDto {

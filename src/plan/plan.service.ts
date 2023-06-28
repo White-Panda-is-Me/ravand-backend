@@ -3,6 +3,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { DelPlanDto, EditPlanDto ,PlanDto } from './dto';
 import * as moment from "moment";
 import { v4 as uuid } from "uuid";
+import { ChildPlanDto } from 'src/auth/dto';
+import { Role } from '@prisma/client';
+import { PrismaClientValidationError } from '@prisma/client/runtime';
+import { log } from 'console';
 
 @Injectable()
 export class PlanService {
@@ -30,51 +34,50 @@ export class PlanService {
         }
     }
 
-    async CreatePlan(dto: PlanDto ,usrid: number) {
-        console.log(dto.start);
+    private async SavePlan(tasks: string ,usrId: number) {
+        await this.prisma.plan.create({
+            data: {
+                UserId: usrId,
+                Tasks: tasks,
+            }
+        });
+    }
+
+    private DividePlan(dto: PlanDto) {
         let tasks = dto.tasks;
-        let start = moment(dto.start ,"H:m");
-        let end = moment(dto.end ,"H:m");
+        let start = moment(dto.start ,"HH:mm");
+        let end = moment(dto.end ,"HH:mm");
         let blocked = dto.blocked;
         dto.blocked.map((bl ,i) => {
             blocked[i].start = moment(bl.start ,"HH:mm");
             blocked[i].end = moment(bl.end ,"HH:mm");
-        })
-        // let isblocked: boolean;
-        // if(dto.blocked.length === 0) {
-        //     blocked_time = null;
-        //     isblocked = false;
-        // } else {
-        //     blocked_time = dto.blocked;
-        //     isblocked = true;
-        // }
-
-
+        });
 
         //
         //  defining variables
         //
-
-        // let blocked = [
-        //     {"name": "asd1" ,"start": moment("11:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")},
-        //     {"name": "asd2" ,"start": moment("14:00" ,"HH:mm") ,"end": moment("16:00" ,"HH:mm")}
-        // ];
-        // let start = moment("9:00" ,"HH:mm");
-        let start2 = moment(start);
-        // let end = moment("17:00" ,"HH:mm");
         let to = moment(start);
         let diff = 0;
-        // let tasks = [
-        //     {"name": "hello" ,"min": 20 ,"imp": 20},
-        //     {"name": "arabic" ,"min": 120 ,"imp": 13},
-        //     {"name": "riazi" ,"min": 60 ,"imp": 12},
-        // ];
-        let tasks2 = [];
-        let blocked2 = [ {"name": "" ,"start": moment() ,"end": moment()} ];
+        let shd_loop = dto.loop;
         let sorted_tasks = [];
         let m_itr = 0;
         let g_diff = 0;
         let break_flag = false;
+
+
+        function edit_end() {
+            let itr = sorted_tasks.length - 1;
+            let from = moment(sorted_tasks[itr].from ,"HH:mm");
+            let end = moment(sorted_tasks[itr].to ,"HH:mm");
+
+            if(Math.abs(from.diff(end ,"minutes")) < 9) {
+                sorted_tasks.pop();
+                sorted_tasks.pop();
+                itr -= 2;
+                sorted_tasks[itr].to = end.format("HH:mm");
+            }
+        }
+
 
         //
         // adjusting the start or end time if they are after or before blocked times
@@ -98,8 +101,9 @@ export class PlanService {
         // taking a copy of tasks and blocks to use them in the feature
         //
 
-        tasks2 = JSON.parse(JSON.stringify(tasks));
-        blocked2 = JSON.parse(JSON.stringify(blocked));
+        const start2 = moment(start);
+        const tasks2 = JSON.parse(JSON.stringify(tasks));
+        const blocked2 = JSON.parse(JSON.stringify(blocked));
 
         //
         // This function checks if the loop continue to appending tasks to the sorted_tasks
@@ -130,7 +134,7 @@ export class PlanService {
                 //
 
                 let work_len = 25;
-                
+
                 //
                 // here we check if the whole time of a single task is between 35 and 5
                 // if it is, The work_time would be the whole minutes of that task
@@ -153,7 +157,7 @@ export class PlanService {
                 if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].end))) {
                     start.subtract(work_len ,"minutes");
                     diff = start.diff(blocked[0].start ,"minutes");
-                    
+                    // log(diff)
                     if (diff > 10) {
                         to = moment(blocked[0].start);
                         to.add(diff ,"minutes");
@@ -236,10 +240,12 @@ export class PlanService {
             // Then reset all needed variables and from the copied vasiables at the first
             // And the jump rigth at the start of the loop again and continue appending to the sorted_tasks
             //
-
+            
             if(m_itr == 0)
                 g_diff = end.diff(to ,"minutes");
-            if(g_diff < 5)
+            else
+                break;
+            if((g_diff < 5 && g_diff > -5) || shd_loop)
                 break;
             else
                 sorted_tasks = [];
@@ -247,7 +253,7 @@ export class PlanService {
                 quoit = (Math.round(quoit / 5) * 5);
                 g_diff = 0;
                 tasks = tasks2;
-                blocked2.map((bl: any) => {
+                blocked2.map((bl) => {
                     let s_index = bl.start.indexOf('T');
                     let e_index = bl.end.indexOf('T');
                     bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
@@ -271,29 +277,22 @@ export class PlanService {
             sorted_tasks.pop();
         }
 
+        edit_end();
+
         return sorted_tasks;
     }
 
-    async EditPlan(dto: EditPlanDto ,userid: number): Promise<{msg: string}> {
-        const plan = await this.prisma.plan.findUnique({
-            where :{
-                planid: dto.id,
+    async CreatePlan(dto: PlanDto ,usrid: number) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: usrid
             }
         });
-        if(userid === plan.UserId) {
-            await this.prisma.plan.update({
-                where: {
-                    planid: plan.planid,
-                },
-                data: {
-                    starts: dto.starts,
-                    ends: dto.ends
-                }
-            });
-            return {msg: "Task Edited successfully."};
-        } else {
-            return {msg: "Task doesn't exists or the user is not compatible!"};
-        }
+        if(!user) 
+            throw new HttpException("user doesn't exist" ,404);
+        this.SavePlan(JSON.stringify(dto) ,usrid);
+        return this.DividePlan(dto);
+        
     }
 
     async DelPlan(dto: DelPlanDto ,userid: number): Promise<{msg: string}> {
@@ -311,6 +310,44 @@ export class PlanService {
             return {msg: "Task Deleted successfully."};
         } else {
             return {msg: "Task doesn't exists or the user is not compatible!"};
+        }
+    }
+
+    async GetChildPlan(dto: ChildPlanDto ,id: number) {
+        const child = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
+            },
+        });
+        if(!child)
+            throw new HttpException("Child Doesn't exist!" ,404);
+        const rel = await this.prisma.childreq.findFirst({
+            where: {
+                Accepted: true,
+                ParentId: id,
+                ChildId: child.id
+            },
+        });
+        log(id ,child)
+        if(!rel)
+            throw new HttpException("This User Isn't your child!" ,405);
+        if(rel.Accepted) {
+            const plan = await this.prisma.plan.findFirst({
+                where: {
+                    UserId: child.id,
+                },
+            });
+            if(!plan)
+                throw new HttpException("Plan doesn't exist!" ,6);
+            let dto = new PlanDto();
+            dto.blocked = JSON.parse(plan.Tasks.toString()).blocked;
+            dto.start   = JSON.parse(plan.Tasks.toString()).start;
+            dto.end     = JSON.parse(plan.Tasks.toString()).end;
+            dto.tasks   = JSON.parse(plan.Tasks.toString()).tasks;
+            dto.loop    = JSON.parse(plan.Tasks.toString()).loop;
+            return this.DividePlan(dto);
+        } else {
+            throw new HttpException("This User Isn't your child!" ,5);
         }
     }
 }
