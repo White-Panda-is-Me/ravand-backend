@@ -1,11 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { DelPlanDto, EditPlanDto ,PlanDto } from './dto';
+import { DelPlanDto ,PlanDto } from './dto';
 import * as moment from "moment";
-import { v4 as uuid } from "uuid";
 import { ChildPlanDto } from 'src/auth/dto';
-import { Role } from '@prisma/client';
-import { PrismaClientValidationError } from '@prisma/client/runtime';
 import { log } from 'console';
 
 @Injectable()
@@ -77,7 +74,6 @@ export class PlanService {
                 sorted_tasks[itr].to = end.format("HH:mm");
             }
         }
-
 
         //
         // adjusting the start or end time if they are after or before blocked times
@@ -258,8 +254,6 @@ export class PlanService {
                     let e_index = bl.end.indexOf('T');
                     bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
                     bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
-                    bl.start.add(210 ,"minutes");
-                    bl.end.add(210 ,"minutes");
                 })
                 blocked = blocked2;
                 tasks.map((task) => {
