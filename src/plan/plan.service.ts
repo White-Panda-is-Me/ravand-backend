@@ -318,6 +318,7 @@ export class PlanService {
         //  printing sorted tasks
         //
         if(edit_first_flag) {
+            log("yse")
             sorted_tasks.splice(0 ,1);
         }
         edit_end();
