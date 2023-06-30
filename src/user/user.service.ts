@@ -38,6 +38,8 @@ export class UserService{
                 id: usrid
             },
         });
+        if(user.email == dto.email)
+            throw new HttpException("you cannot request yourself!" ,405);
         const child = await this.prisma.user.findUnique({
             where: {
                 email: dto.email
