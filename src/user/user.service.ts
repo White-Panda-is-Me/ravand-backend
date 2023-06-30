@@ -159,7 +159,7 @@ export class UserService{
             delete child.ParentId;
         });
         let m_childs: {email: string ,id: number ,CreatedAt: Date ,UpdatedAt: Date ,fName: string ,lName: string ,reqid?: number}[] = childs;
-        m_childs.map(async (ch) => {
+        m_childs.map(async (ch ,i) => {
             let rel = await this.prisma.childreq.findMany({
                 where: {
                     ChildId: ch.id,
@@ -167,8 +167,8 @@ export class UserService{
                 }
             });
             ch.reqid = rel[0].id;
-            log(m_childs)
+            if(i == (m_childs.length - 1))
+                return m_childs;
         })
-        return m_childs;
     }
 }
