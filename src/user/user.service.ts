@@ -166,8 +166,9 @@ export class UserService{
                     ParentId: id
                 }
             });
-            ch.reqid = rel[0].id;
-            m_childs[i] = ch;
+            // ch.reqid = rel[0].id;
+            m_childs[i].reqid = rel[0].id;
+            // m_childs[i] = ch;
         })
         return m_childs;
     }
