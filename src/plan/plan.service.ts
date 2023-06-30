@@ -76,7 +76,14 @@ export class PlanService {
         let m_itr = 0;
         let g_diff = 0;
         let break_flag = false;
+        
+        blocked2 = JSON.parse(JSON.stringify(blocked));
 
+        function edit_first() {
+            if(blocked2[0].start.isBefore(start)) {
+                sorted_tasks.splice(0 ,1);
+            }
+        }
         function edit_end() {
             let itr = sorted_tasks.length - 1;
             let from = moment(sorted_tasks[itr].from ,"HH:mm");
@@ -130,7 +137,6 @@ export class PlanService {
         //
         
         tasks2 = JSON.parse(JSON.stringify(tasks));
-        blocked2 = JSON.parse(JSON.stringify(blocked));
         
         //
         // This function checks if the loop continue to appending tasks to the sorted_tasks
@@ -291,8 +297,6 @@ export class PlanService {
                     let e_index = bl.end.indexOf('T');
                     bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
                     bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
-                    // bl.start.add(210 ,"minutes");
-                    // bl.end.add(210 ,"minutes");
                 });
                 blocked = blocked2;
                 tasks.map((task) => {
@@ -313,7 +317,7 @@ export class PlanService {
         //
         //  printing sorted tasks
         //
-        
+        edit_first();
         edit_end();
         
         return sorted_tasks;
