@@ -111,6 +111,8 @@ export class PlanService {
         // adjusting the start or end time if they are after or before blocked times
         //
 
+        blocked.sort((a ,b) => a.start.toDate() - b.start.toDate());
+
         if(blocked.length != 0 && blocked[0].start.isBefore(start)) {
             start = moment(blocked[0].start);
         } else if(blocked.length != 0 && blocked[blocked.length - 1].end.isAfter(end)) {
@@ -122,7 +124,6 @@ export class PlanService {
         // sorting tasks based on their importance
         //
 
-        blocked.sort((a ,b) => a.start.toDate() - b.start.toDate());
         tasks.sort((a ,b) => b.imp - a.imp);
 
         //
