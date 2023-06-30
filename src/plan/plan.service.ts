@@ -346,39 +346,34 @@ export class PlanService {
     }
 
     async GetChildPlan(dto: ChildPlanDto ,id: number) {
-        const child = await this.prisma.user.findUnique({
+        const rel = await this.prisma.childreq.findUnique({
             where: {
-                email: dto.email
+                id: dto.reqid,
             },
         });
-        if(!child)
-            throw new HttpException("Child Doesn't exist!" ,404);
-        const rel = await this.prisma.childreq.findFirst({
-            where: {
-                Accepted: true,
-                ParentId: id,
-                ChildId: child.id
-            },
-        });
-        if(!rel)
-            throw new HttpException("This User Isn't your child!" ,405);
-        if(rel.Accepted) {
-            const plan = await this.prisma.plan.findFirst({
-                where: {
-                    UserId: child.id,
-                },
-            });
-            if(!plan)
-                throw new HttpException("Plan doesn't exist!" ,6);
-            let dto = new PlanDto();
-            dto.blocked = JSON.parse(plan.Tasks.toString()).blocked;
-            dto.start   = JSON.parse(plan.Tasks.toString()).start;
-            dto.end     = JSON.parse(plan.Tasks.toString()).end;
-            dto.tasks   = JSON.parse(plan.Tasks.toString()).tasks;
-            dto.loop    = JSON.parse(plan.Tasks.toString()).loop;
-            return this.DividePlan(dto);
+        if(rel.ParentId == id) {
+            if(!rel)
+                throw new HttpException("relation doesn't exist!" ,409);
+            if(rel.Accepted) {
+                const plan = await this.prisma.plan.findFirst({
+                    where: {
+                        UserId: rel.ChildId,
+                    },
+                });
+                if(!plan)
+                    return [];
+                let dto = new PlanDto();
+                dto.blocked = JSON.parse(plan.Tasks.toString()).blocked;
+                dto.start   = JSON.parse(plan.Tasks.toString()).start;
+                dto.end     = JSON.parse(plan.Tasks.toString()).end;
+                dto.tasks   = JSON.parse(plan.Tasks.toString()).tasks;
+                dto.loop    = JSON.parse(plan.Tasks.toString()).loop;
+                return this.DividePlan(dto);
+            } else {
+                throw new HttpException("The User has not accpeted you request!" ,405);
+            }
         } else {
-            throw new HttpException("This User Isn't your child!" ,5);
+            throw new HttpException("You are not a parent" ,406);
         }
     }
 }

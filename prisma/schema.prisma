@@ -28,7 +28,7 @@ model User {
 }
 
 model Plan {
-  planid        Int   @id @default(autoincrement())
+  planid        Int       @id @default(autoincrement())
 
   date          DateTime  @default(now())
   Tasks         Json
