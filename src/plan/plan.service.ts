@@ -315,7 +315,6 @@ export class PlanService {
     }
 
     async CreatePlan(dto: PlanDto ,usrid: number) {
-        log(dto)
         const user = await this.prisma.user.findUnique({
             where: {
                 id: usrid
@@ -361,7 +360,6 @@ export class PlanService {
                 ChildId: child.id
             },
         });
-        log(id ,child)
         if(!rel)
             throw new HttpException("This User Isn't your child!" ,405);
         if(rel.Accepted) {
