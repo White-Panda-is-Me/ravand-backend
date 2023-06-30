@@ -320,6 +320,7 @@ export class PlanService {
     }
 
     async CreatePlan(dto: PlanDto ,usrid: number) {
+        log(dto)
         const user = await this.prisma.user.findUnique({
             where: {
                 id: usrid
