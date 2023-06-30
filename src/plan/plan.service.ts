@@ -80,7 +80,7 @@ export class PlanService {
                     itr--;
                     to = moment(sorted_tasks[itr].to ,"HH:mm");
                 } else {
-                    if(sorted_tasks[itr].name == "rest"){
+                    if(sorted_tasks[itr].name == "استراحت"){
                         sorted_tasks.splice(sorted_tasks.length - 1 , 1);
                         itr--;
                         to = moment(sorted_tasks[itr].to ,"HH:mm");
@@ -188,7 +188,7 @@ export class PlanService {
                         to = moment(blocked[0].start);
                         to.add(diff ,"minutes");
                         sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
-                        if(sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                        if(sorted_tasks[sorted_tasks.length - 1].name == "استراحت") {
                             sorted_tasks.splice(sorted_tasks.length - 1 ,1);
                         }
                         sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
@@ -202,12 +202,12 @@ export class PlanService {
                         
                         tasks[i].min -= diff;
                         start.add(diff + 5 ,"minutes");
-                        sorted_tasks.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
+                        sorted_tasks.push({"name": "استراحت" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
                         to.add(5 ,"minutes");
                     } else {
                         start = moment(blocked[0].end);
                         to = moment(start);
-                        if(sorted_tasks.length != 0 && sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                        if(sorted_tasks.length != 0 && sorted_tasks[sorted_tasks.length - 1].name == "استراحت") {
                             sorted_tasks.splice(sorted_tasks.length - 1 ,1);
                         }
                         sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
@@ -221,7 +221,7 @@ export class PlanService {
                         
                         tasks[i].min -= work_len;
                         start.add(work_len + 5 ,"minutes");
-                        sorted_tasks.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
+                        sorted_tasks.push({"name": "استراحت" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
                         to = moment(start);
                     }
                     
@@ -237,7 +237,7 @@ export class PlanService {
                     tasks[i].min -= work_len;
                     sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
                     start.add((work_len + 5),"minutes");
-                    sorted_tasks.push({"name": "rest" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
+                    sorted_tasks.push({"name": "استراحت" ,"from": to.format("HH:mm") ,"to": start.format("HH:mm")});
                 }
         
                 //
@@ -301,7 +301,7 @@ export class PlanService {
         // At the end just check if the last task is rest then delete that
         //
         
-        if(sorted_tasks[sorted_tasks.length - 1].name === "rest") {
+        if(sorted_tasks[sorted_tasks.length - 1].name === "استراحت") {
             sorted_tasks.pop();
         }
         
