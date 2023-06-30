@@ -76,12 +76,12 @@ export class PlanService {
         let m_itr = 0;
         let g_diff = 0;
         let break_flag = false;
-        
+        let edit_first_flag = false;
         blocked2 = JSON.parse(JSON.stringify(blocked));
 
         function edit_first() {
             if(blocked2[0].start.isBefore(start)) {
-                sorted_tasks.splice(0 ,1);
+                edit_first_flag = true;
             }
         }
         function edit_end() {
@@ -317,7 +317,9 @@ export class PlanService {
         //
         //  printing sorted tasks
         //
-        edit_first();
+        if(edit_first_flag) {
+            sorted_tasks.splice(0 ,1);
+        }
         edit_end();
         
         return sorted_tasks;
