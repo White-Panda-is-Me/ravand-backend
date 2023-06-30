@@ -291,8 +291,8 @@ export class PlanService {
                     let e_index = bl.end.indexOf('T');
                     bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
                     bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
-                    bl.start.add(210 ,"minutes");
-                    bl.end.add(210 ,"minutes");
+                    // bl.start.add(210 ,"minutes");
+                    // bl.end.add(210 ,"minutes");
                 });
                 blocked = blocked2;
                 tasks.map((task) => {
