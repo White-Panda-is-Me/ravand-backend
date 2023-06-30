@@ -158,7 +158,7 @@ export class UserService{
             delete child.role;
             delete child.ParentId;
         });
-        let m_childs: any[] = childs;
+        let m_childs: {email ,id ,CreatedAt ,UpdatedAt ,fName ,lName ,reqid?}[] = childs;
         m_childs.map(async (ch ,i) => {
             let rel = await this.prisma.childreq.findMany({
                 where: {
@@ -166,9 +166,7 @@ export class UserService{
                     ParentId: id
                 }
             });
-            // ch.reqid = rel[0].id;
-            m_childs[i].reqid = rel[0].id;
-            // m_childs[i] = ch;
+            ch.reqid = rel[0].id;
         })
         return m_childs;
     }
