@@ -53,9 +53,13 @@ export class PlanService {
         //
         //  defining variables
         //
+
+        let start2 = moment(start);
         let to = moment(start);
         let diff = 0;
-        let shd_loop = dto.loop;
+        let shd_loop = false;
+        let tasks2 = [];
+        let blocked2 = [];
         let sorted_tasks = [];
         let m_itr = 0;
         let g_diff = 0;
@@ -65,15 +69,33 @@ export class PlanService {
         function edit_end() {
             let itr = sorted_tasks.length - 1;
             let from = moment(sorted_tasks[itr].from ,"HH:mm");
-            let end = moment(sorted_tasks[itr].to ,"HH:mm");
+            let to = moment(sorted_tasks[itr].to ,"HH:mm");
 
-            if(Math.abs(from.diff(end ,"minutes")) < 9) {
+            // log(to.diff(end ,"minutes"))
+            while(1 && shd_loop){
+                if(to.isAfter(end)) {
+                    sorted_tasks.splice(sorted_tasks.length - 1 , 1);
+                    itr--;
+                    to = moment(sorted_tasks[itr].to ,"HH:mm");
+                } else {
+                    if(sorted_tasks[itr].name == "rest"){
+                        sorted_tasks.splice(sorted_tasks.length - 1 , 1);
+                        itr--;
+                        to = moment(sorted_tasks[itr].to ,"HH:mm");
+                    }
+                    sorted_tasks[itr].to = end.format("HH:mm");
+                    break;
+                }
+            }
+
+            if(from.diff(to ,"minutes") < 9 && from.diff(to ,"minutes") > -9) {
                 sorted_tasks.pop();
                 sorted_tasks.pop();
                 itr -= 2;
-                sorted_tasks[itr].to = end.format("HH:mm");
+                sorted_tasks[itr].to = to.format("HH:mm");
             }
         }
+
 
         //
         // adjusting the start or end time if they are after or before blocked times
@@ -97,9 +119,8 @@ export class PlanService {
         // taking a copy of tasks and blocks to use them in the feature
         //
 
-        const start2 = moment(start);
-        const tasks2 = JSON.parse(JSON.stringify(tasks));
-        const blocked2 = JSON.parse(JSON.stringify(blocked));
+        tasks2 = JSON.parse(JSON.stringify(tasks));
+        blocked2 = JSON.parse(JSON.stringify(blocked));
 
         //
         // This function checks if the loop continue to appending tasks to the sorted_tasks
@@ -150,14 +171,19 @@ export class PlanService {
                 // And the appends the task
                 //
 
-                if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].end))) {
+                
+                // log(tasks[i].name ,work_len)
+
+                if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].start))) {
                     start.subtract(work_len ,"minutes");
                     diff = start.diff(blocked[0].start ,"minutes");
-                    // log(diff)
                     if (diff > 10) {
                         to = moment(blocked[0].start);
                         to.add(diff ,"minutes");
                         sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
+                        if(sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                            sorted_tasks.splice(sorted_tasks.length - 1 ,1);
+                        }
                         sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                         start = moment(blocked[0].end);
                         to = moment(start);
@@ -174,6 +200,9 @@ export class PlanService {
                     } else {
                         start = moment(blocked[0].end);
                         to = moment(start);
+                        if(sorted_tasks.length != 0 && sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                            sorted_tasks.splice(sorted_tasks.length - 1 ,1);
+                        }
                         sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                         to.add(work_len ,"minutes");
                         sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
@@ -195,6 +224,7 @@ export class PlanService {
                 // Otherwise if it wouldn't crash with the blocked times it just appends the task 
                 
                 } else {
+                    log(tasks ,work_len)
                     start.subtract(work_len ,"minutes");
                     to = moment(start);
                     to.add(work_len ,"minutes");
@@ -239,9 +269,7 @@ export class PlanService {
             
             if(m_itr == 0)
                 g_diff = end.diff(to ,"minutes");
-            else
-                break;
-            if((g_diff < 5 && g_diff > -5) || shd_loop)
+            if((g_diff < 5 && g_diff > -5) || !shd_loop)
                 break;
             else
                 sorted_tasks = [];
@@ -254,6 +282,10 @@ export class PlanService {
                     let e_index = bl.end.indexOf('T');
                     bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
                     bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
+                    bl.start.add(210 ,"minutes");
+                    bl.end.add(210 ,"minutes");
+                    bl.start.subtract(1 ,"day");
+                    bl.end.subtract(1 ,"day");
                 })
                 blocked = blocked2;
                 tasks.map((task) => {
@@ -270,6 +302,10 @@ export class PlanService {
         if(sorted_tasks[sorted_tasks.length - 1].name === "rest") {
             sorted_tasks.pop();
         }
+
+        //
+        //  printing sorted tasks
+        //
 
         edit_end();
 

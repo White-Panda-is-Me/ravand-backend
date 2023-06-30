@@ -9,20 +9,20 @@ const moment = require("moment");
 //
 
 let blocked = [
-    {"name": "bath" ,"start": moment("10:20" ,"HH:mm") ,"end": moment("11:00" ,"HH:mm")},
-    // {"name": "phone" ,"start": moment("12:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")}
+    {"name": "some 1" ,"start": moment("00:00" ,"HH:mm") ,"end": moment("05:00" ,"HH:mm")},
+    {"name": "some 2" ,"start": moment("05:30" ,"HH:mm") ,"end": moment("08:00" ,"HH:mm")},
 ];
-let start = moment("2:00" ,"HH:mm");
+let start = moment("00:00" ,"HH:mm");
 let start2 = moment(start);
-let end = moment("11:36" ,"HH:mm");
+let end = moment("21:30" ,"HH:mm");
 let to = moment(start);
 let diff = 0;
 let shd_loop = false;
 let tasks = [
-    {"name": "پدر هاشمی" ,"min": 60 ,"imp": 1},
-    {"name": "violin" ,"min": 25 ,"imp": 14},
-    {"name": "coding" ,"min": 100 ,"imp": 20},
-    {"name": "پدر جمشیدی" ,"min": 67 ,"imp": 15}
+    {"name": "something 1" ,"min": 160 ,"imp": 20},
+    {"name": "something 2" ,"min": 100 ,"imp": 14},
+    {"name": "something 3" ,"min": 90 ,"imp": 10},
+    {"name": "something 4" ,"min": 150 ,"imp": 16}
 ];
 let tasks2 = [];
 let blocked2 = [];
@@ -35,13 +35,30 @@ let break_flag = false;
 function edit_end() {
     let itr = sorted_tasks.length - 1;
     let from = moment(sorted_tasks[itr].from ,"HH:mm");
-    let end = moment(sorted_tasks[itr].to ,"HH:mm");
+    let to = moment(sorted_tasks[itr].to ,"HH:mm");
 
-    if(-9 < from.diff(end ,"minutes") < 9) {
+    // log(to.diff(end ,"minutes"))
+    while(1 && shd_loop){
+        if(to.isAfter(end)) {
+            sorted_tasks.splice(sorted_tasks.length - 1 , 1);
+            itr--;
+            to = moment(sorted_tasks[itr].to ,"HH:mm");
+        } else {
+            if(sorted_tasks[itr].name == "rest"){
+                sorted_tasks.splice(sorted_tasks.length - 1 , 1);
+                itr--;
+                to = moment(sorted_tasks[itr].to ,"HH:mm");
+            }
+            sorted_tasks[itr].to = end.format("HH:mm");
+            break;
+        }
+    }
+
+    if(from.diff(to ,"minutes") < 9 && from.diff(to ,"minutes") > -9) {
         sorted_tasks.pop();
         sorted_tasks.pop();
         itr -= 2;
-        sorted_tasks[itr].to = end.format("HH:mm");
+        sorted_tasks[itr].to = to.format("HH:mm");
     }
 }
 
@@ -120,16 +137,18 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         // And the appends the task
         //
 
-        if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].end))) {
+        
+        // log(tasks[i].name ,work_len)
+
+        if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].start))) {
             start.subtract(work_len ,"minutes");
             diff = start.diff(blocked[0].start ,"minutes");
-            // log(diff)
             if (diff > 10) {
                 to = moment(blocked[0].start);
                 to.add(diff ,"minutes");
                 sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
-                if(sorted_tasks[sorted_tasks.length - 2].name == "rest") {
-                    sorted_tasks.splice(sorted_tasks - 2 ,1);
+                if(sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                    sorted_tasks.splice(sorted_tasks.length - 1 ,1);
                 }
                 sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                 start = moment(blocked[0].end);
@@ -147,9 +166,8 @@ for (m_itr = 0;m_itr < 2;m_itr++){
             } else {
                 start = moment(blocked[0].end);
                 to = moment(start);
-                if(sorted_tasks[sorted_tasks.length - 1].name == "rest") {
-                    log("yes")
-                    sorted_tasks.splice(1 ,1);
+                if(sorted_tasks != 0 && sorted_tasks[sorted_tasks.length - 1].name == "rest") {
+                    sorted_tasks.splice(sorted_tasks.length - 1 ,1);
                 }
                 sorted_tasks.push({"name": blocked[0].name ,"from": blocked[0].start.format("HH:mm") ,"to": blocked[0].end.format("HH:mm")});
                 to.add(work_len ,"minutes");
@@ -172,6 +190,7 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         // Otherwise if it wouldn't crash with the blocked times it just appends the task 
         
         } else {
+            log(tasks ,work_len)
             start.subtract(work_len ,"minutes");
             to = moment(start);
             to.add(work_len ,"minutes");
@@ -216,7 +235,7 @@ for (m_itr = 0;m_itr < 2;m_itr++){
     
     if(m_itr == 0)
         g_diff = end.diff(to ,"minutes");
-    if((g_diff < 5 && g_diff > -5) || shd_loop)
+    if((g_diff < 5 && g_diff > -5) || !shd_loop)
         break;
     else
         sorted_tasks = [];
@@ -231,6 +250,8 @@ for (m_itr = 0;m_itr < 2;m_itr++){
             bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
             bl.start.add(210 ,"minutes");
             bl.end.add(210 ,"minutes");
+            bl.start.subtract(1 ,"day");
+            bl.end.subtract(1 ,"day");
         })
         blocked = blocked2;
         tasks.map((task) => {
