@@ -167,8 +167,8 @@ export class UserService{
                 }
             });
             ch.reqid = rel[0].id;
-            log(ch)
         })
+        log(m_childs)
         return m_childs;
     }
 }
