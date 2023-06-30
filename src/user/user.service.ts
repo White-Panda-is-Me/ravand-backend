@@ -158,19 +158,18 @@ export class UserService{
             delete child.role;
             delete child.ParentId;
         });
-        let m_childs: {email: string ,id: number ,CreatedAt: Date ,UpdatedAt: Date ,fName: string ,lName: string ,reqid?: number}[] = childs;
-        m_childs.map(async (ch ,i) => {
+        let m_childs: any[] = childs;
+        for(let i = 0;i < m_childs.length;i++) {
             let rel = await this.prisma.childreq.findMany({
                 where: {
-                    ChildId: ch.id,
+                    ChildId: m_childs[i].id,
                     ParentId: id
                 }
             });
-            ch.reqid = rel[0].id;
+            m_childs[i].reqid = rel[0].id;
             if(i == (m_childs.length - 1)){
-                log(i ,m_childs.length);
                 return m_childs;
             }
-        })
+        }
     }
 }
