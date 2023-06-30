@@ -94,6 +94,9 @@ export class PlanService {
                 itr -= 2;
                 sorted_tasks[itr].to = to.format("HH:mm");
             }
+            if(moment(sorted_tasks[itr].to ,"HH:mm").isAfter(end)) {
+                sorted_tasks[itr].to = end.format("HH:mm");
+            }
         }
 
 
@@ -170,9 +173,6 @@ export class PlanService {
                 // If the tasks would crash with a blocked time it appends the blocked time to the sorted_tasks
                 // And the appends the task
                 //
-
-                
-                // log(tasks[i].name ,work_len)
 
                 if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].start))) {
                     start.subtract(work_len ,"minutes");
