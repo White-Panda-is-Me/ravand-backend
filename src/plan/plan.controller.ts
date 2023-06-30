@@ -19,8 +19,8 @@ export class PlanController {
         return this.taskService.GetChildPlan(dto ,id);
     }
 
-    @Get("all")
-    GetTasks(@AuthUser() id: number) {
-        return this.taskService.GetPlans(id);
-    }
+    // @Get("all")
+    // GetTasks(@AuthUser() id: number) {
+    //     return this.taskService.GetPlans(id);
+    // }
 }

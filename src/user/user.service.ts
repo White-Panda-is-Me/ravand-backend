@@ -136,6 +136,7 @@ export class UserService{
         }
         res.sendFile("/home/ubuntu/ravand/src/html/done.html");
     }
+
     async GetChilds(id: number) {
         const user = await this.prisma.user.findUnique({
             where: {
@@ -156,6 +157,16 @@ export class UserService{
             delete child.role;
             delete child.ParentId;
         });
-        return childs;
+        let m_childs: any[] = childs;
+        m_childs.map(async (ch) => {
+            const relid = await this.prisma.childreq.findMany({
+                where: {
+                    ChildId: ch.id,
+                    ParentId: id
+                }
+            })[0].id;
+            ch.reqid = relid;
+        })
+        return m_childs;
     }
 }
