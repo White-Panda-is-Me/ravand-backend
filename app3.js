@@ -9,10 +9,10 @@ const moment = require("moment");
 //
 
 let blocked = [
-    {"name": "some 1" ,"start": moment("00:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")},
+    {"name": "some 1" ,"start": moment("12:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")},
     {"name": "some 2" ,"start": moment("14:00" ,"HH:mm") ,"end": moment("15:00" ,"HH:mm")},
 ];
-let start = moment("00:00" ,"HH:mm");
+let start = moment("10:00" ,"HH:mm");
 let start2 = moment(start);
 let end = moment("20:00" ,"HH:mm");
 let to = moment(start);
