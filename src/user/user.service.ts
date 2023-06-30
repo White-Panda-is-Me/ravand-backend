@@ -6,6 +6,7 @@ import * as nodemailer from "nodemailer";
 import { JwtService } from "@nestjs/jwt";
 import { secret } from "src/auth/auth.const";
 import { join } from "path";
+import { log } from "console";
 
 @Injectable()
 export class UserService{
@@ -165,6 +166,7 @@ export class UserService{
                     ParentId: id
                 }
             })[0];
+            log(rel)
             ch.reqid = rel.id;
         })
         return m_childs;
