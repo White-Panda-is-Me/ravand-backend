@@ -355,11 +355,12 @@ export class PlanService {
             if(!rel)
                 throw new HttpException("relation doesn't exist!" ,409);
             if(rel.Accepted) {
-                const plan = await this.prisma.plan.findFirst({
+                const plans = await this.prisma.plan.findMany({
                     where: {
                         UserId: rel.ChildId,
                     },
                 });
+                const plan = plans[plans.length - 1];
                 if(!plan)
                     return [];
                 let dto = new PlanDto();
