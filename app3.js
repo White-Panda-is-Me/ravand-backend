@@ -9,20 +9,20 @@ const moment = require("moment");
 //
 
 let blocked = [
-    {"name": "some 1" ,"start": moment("00:00" ,"HH:mm") ,"end": moment("05:00" ,"HH:mm")},
-    {"name": "some 2" ,"start": moment("05:30" ,"HH:mm") ,"end": moment("08:00" ,"HH:mm")},
+    {"name": "some 1" ,"start": moment("00:00" ,"HH:mm") ,"end": moment("13:00" ,"HH:mm")},
+    {"name": "some 2" ,"start": moment("14:00" ,"HH:mm") ,"end": moment("15:00" ,"HH:mm")},
 ];
 let start = moment("00:00" ,"HH:mm");
 let start2 = moment(start);
-let end = moment("21:30" ,"HH:mm");
+let end = moment("20:00" ,"HH:mm");
 let to = moment(start);
 let diff = 0;
-let shd_loop = false;
+let shd_loop = true;
 let tasks = [
-    {"name": "something 1" ,"min": 160 ,"imp": 20},
-    {"name": "something 2" ,"min": 100 ,"imp": 14},
-    {"name": "something 3" ,"min": 90 ,"imp": 10},
-    {"name": "something 4" ,"min": 150 ,"imp": 16}
+    {"name": "something 1" ,"min": 100 ,"imp": 20},
+    {"name": "something 2" ,"min": 50 ,"imp": 14},
+    {"name": "something 3" ,"min": 190 ,"imp": 10},
+    {"name": "something 4" ,"min": 40 ,"imp": 16}
 ];
 let tasks2 = [];
 let blocked2 = [];
@@ -31,13 +31,11 @@ let m_itr = 0;
 let g_diff = 0;
 let break_flag = false;
 
-
 function edit_end() {
     let itr = sorted_tasks.length - 1;
     let from = moment(sorted_tasks[itr].from ,"HH:mm");
     let to = moment(sorted_tasks[itr].to ,"HH:mm");
 
-    // log(to.diff(end ,"minutes"))
     while(1 && shd_loop){
         if(to.isAfter(end)) {
             sorted_tasks.splice(sorted_tasks.length - 1 , 1);
@@ -105,7 +103,10 @@ function shd_con() {
 
 let i = 0;
 for (m_itr = 0;m_itr < 2;m_itr++){
-
+    log(start)
+    log(end)
+    log(blocked)
+    // log()
     //
     // The main while loop goes here to append the tasks to the sorted_tasks
     //
@@ -136,9 +137,6 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         // If the tasks would crash with a blocked time it appends the blocked time to the sorted_tasks
         // And the appends the task
         //
-
-        
-        // log(tasks[i].name ,work_len)
 
         if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].start))) {
             start.subtract(work_len ,"minutes");
@@ -188,9 +186,8 @@ for (m_itr = 0;m_itr < 2;m_itr++){
                 blocked.splice(0 ,1);
         
         // Otherwise if it wouldn't crash with the blocked times it just appends the task 
-        
+
         } else {
-            log(tasks ,work_len)
             start.subtract(work_len ,"minutes");
             to = moment(start);
             to.add(work_len ,"minutes");
@@ -250,9 +247,7 @@ for (m_itr = 0;m_itr < 2;m_itr++){
             bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
             bl.start.add(210 ,"minutes");
             bl.end.add(210 ,"minutes");
-            bl.start.subtract(1 ,"day");
-            bl.end.subtract(1 ,"day");
-        })
+        });
         blocked = blocked2;
         tasks.map((task) => {
             task.min += quoit;
