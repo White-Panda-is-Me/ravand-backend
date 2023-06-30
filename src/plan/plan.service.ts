@@ -79,11 +79,10 @@ export class PlanService {
         let edit_first_flag = false;
         blocked2 = JSON.parse(JSON.stringify(blocked));
 
-        function edit_first() {
-            if(blocked2[0].start.isBefore(start)) {
-                edit_first_flag = true;
-            }
+        if(blocked[0].start.isBefore(start)) {
+            edit_first_flag = true;
         }
+
         function edit_end() {
             let itr = sorted_tasks.length - 1;
             let from = moment(sorted_tasks[itr].from ,"HH:mm");
@@ -155,9 +154,9 @@ export class PlanService {
         
         let i = 0;
         for (m_itr = 0;m_itr < 2;m_itr++){
-            log(start)
-            log(end)
-            log(blocked)
+            // log(start)
+            // log(end)
+            // log(blocked)
             // log()
             //
             // The main while loop goes here to append the tasks to the sorted_tasks
