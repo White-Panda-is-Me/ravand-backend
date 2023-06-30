@@ -159,13 +159,13 @@ export class UserService{
         });
         let m_childs: any[] = childs;
         m_childs.map(async (ch) => {
-            const relid = await this.prisma.childreq.findMany({
+            const rel = await this.prisma.childreq.findMany({
                 where: {
                     ChildId: ch.id,
                     ParentId: id
                 }
-            })[0].id;
-            ch.reqid = relid;
+            })[0];
+            ch.reqid = rel.id;
         })
         return m_childs;
     }
