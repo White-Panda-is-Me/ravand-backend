@@ -107,8 +107,6 @@ export class PlanService {
         //
 
         if(blocked.length != 0 && blocked[0].start.isBefore(start)) {
-            start = moment(blocked[0].end);
-            to = moment(start);
             block_bug_flag = true;
         } else if(blocked.length != 0 && blocked[blocked.length - 1].end.isAfter(end)) {
             end = blocked[blocked.length - 1].end;
@@ -148,6 +146,8 @@ export class PlanService {
         for (m_itr = 0;m_itr < 2;m_itr++){
             if(block_bug_flag) {
                 sorted_tasks.push({"name": blocked[0].name ,"start": blocked[0].start.format("HH:mm") ,"end": blocked[0].end.format("HH:mm")});
+                start = moment(blocked[0].end);
+                to = moment(start);
                 blocked.splice(0 ,1);
             }
 

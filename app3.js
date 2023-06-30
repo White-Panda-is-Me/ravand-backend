@@ -112,6 +112,8 @@ let i = 0;
 for (m_itr = 0;m_itr < 2;m_itr++){
     if(block_bug_flag) {
         sorted_tasks.push({"name": blocked[0].name ,"start": blocked[0].start.format("HH:mm") ,"end": blocked[0].end.format("HH:mm")});
+        start = moment(blocked[0].end);
+        to = moment(start);
         blocked.splice(0 ,1);
     }
 
@@ -255,6 +257,8 @@ for (m_itr = 0;m_itr < 2;m_itr++){
             let e_index = bl.end.indexOf('T');
             bl.start = moment(bl.start.substring(s_index + 1 ,s_index + 6) ,"HH:mm");
             bl.end = moment(bl.end.substring(e_index + 1 ,e_index + 6) ,"HH:mm");
+            bl.start.add(210 ,"minutes");
+            bl.end.add(210 ,"minutes");
         });
         blocked = blocked2;
         tasks.map((task) => {
