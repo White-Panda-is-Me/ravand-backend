@@ -166,8 +166,8 @@ export class UserService{
                     ParentId: id
                 }
             });
-            log(rel)
             ch.reqid = rel[0].id;
+            log(ch)
         })
         return m_childs;
     }
