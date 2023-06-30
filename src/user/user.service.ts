@@ -51,14 +51,15 @@ export class UserService{
                 ParentId: user.id,
             }
         });
-        if(req)
-            throw new HttpException("You have already requested to your child!" ,407);
-        req = await this.prisma.childreq.create({
-            data: {
-                ChildId: child.id,
-                ParentId: user.id,
-            }
-        });
+        if(req && req.Accepted)
+            throw new HttpException("this user is already your child!" ,407);
+        if(!req)
+            req = await this.prisma.childreq.create({
+                data: {
+                    ChildId: child.id,
+                    ParentId: user.id,
+                }
+            });
 
         // create a nodemailer transporter
         const transporter = nodemailer.createTransport({
