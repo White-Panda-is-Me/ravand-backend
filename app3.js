@@ -14,19 +14,15 @@ let blocked = [
 ];
 let start = moment("10:00" ,"HH:mm");
 let start2 = moment(start);
-let end = moment("20:00" ,"HH:mm");
+let end = moment("21:00" ,"HH:mm");
 let to = moment(start);
 let diff = 0;
 let shd_loop = true;
 let tasks = [
-    // {"name": "something 1" ,"min": 100 ,"imp": 20},
-    // {"name": "something 2" ,"min": 50 ,"imp": 14},
-    // {"name": "something 3" ,"min": 190 ,"imp": 10},
-    // {"name": "something 4" ,"min": 40 ,"imp": 16}
-    {"name": "something 1" ,"imp": 12 ,"min": 100,"score": null},
-    {"name": "something 2" ,"imp": 4 ,"min": 65,"score": null},
-    {"name": "something 3" ,"imp": 2 ,"min": 40,"score": null},
-    {"name": "something 4" ,"imp": 16 ,"min": 55,"score": null}
+    {"name": "something 1" ,"imp": 12 ,"min": 100},
+    {"name": "something 2" ,"imp": 4 ,"min": 65},
+    {"name": "something 3" ,"imp": 2 ,"min": 40},
+    {"name": "something 4" ,"imp": 16 ,"min": 55}
 ];
 let tasks2 = [];
 let blocked2 = [];
@@ -42,7 +38,10 @@ function edit_end() {
     let to = moment(sorted_tasks[itr].to ,"HH:mm");
 
     while(1 && shd_loop){
-        if(to.isAfter(end)) {
+        if(to.isAfter(end) && from.isBefore(end)) {
+            sorted_tasks[itr].to = end.format("HH:mm");
+            break;
+        } else if(to.isAfter(end)) {
             sorted_tasks.splice(sorted_tasks.length - 1 , 1);
             itr--;
             to = moment(sorted_tasks[itr].to ,"HH:mm");
@@ -151,9 +150,7 @@ for (m_itr = 0;m_itr < 2;m_itr++){
         if(blocked.length != 0 && (start.isBetween(blocked[0].start ,blocked[0].end) || start.isSameOrAfter(blocked[0].start))) {
             start.subtract(work_len ,"minutes");
             diff = start.diff(blocked[0].start ,"minutes");
-            // log(diff)
             if (diff > 10) {
-                // log("yes" ,blocked[0])
                 to = moment(blocked[0].start);
                 to.add(diff ,"minutes");
                 sorted_tasks.push({"name": tasks[i].name ,"from": start.format("HH:mm") ,"to": to.format("HH:mm")});
