@@ -165,9 +165,9 @@ export class UserService{
                     ChildId: ch.id,
                     ParentId: id
                 }
-            })[0];
+            });
             log(rel)
-            ch.reqid = rel.id;
+            ch.reqid = rel[0].id;
         })
         return m_childs;
     }
