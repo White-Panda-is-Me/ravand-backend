@@ -81,7 +81,7 @@ export class UserService{
         const mailOptions = {
         from: 'hlangari1353@gmail.com',
         to: child.email,
-        subject: 'Test Email with Button',
+        subject: 'Accept request!',
         html: `<body style="text-align: center;"><p>Hello ${child.fName},</p><p>Your parent, ${user.fName} ${user.lName} has requested you. To accept Click the button Below:</p><form method="get" action="http://ravand.hipoo.ir:5000/users/accept">
                                                                                                                         <input type="hidden" name="reqid" value="${req.id}">
                                                                                                                         <input type="hidden" name="Authorization" value="${token}">
@@ -109,7 +109,7 @@ export class UserService{
             },
         });
         if(!req){
-            res.sendFile("/Users/admin/projects/js/app/Ravand/src/html/fail.html");
+            res.sendFile("/home/ubuntu/ravand/src/html/fail.html");
             throw new HttpException("req doesn't exist!" ,7);
         }
         try {
@@ -130,9 +130,9 @@ export class UserService{
                 }
             })
         } catch (err) {
-            res.sendFile("/Users/admin/projects/js/app/Ravand/src/html/fail.html");
+            res.sendFile("/home/ubuntu/ravand/src/html/fail.html");
         }
-        res.sendFile("/Users/admin/projects/js/app/Ravand/src/html/done.html");
+        res.sendFile("/home/ubuntu/ravand/src/html/done.html");
     }
     async GetChilds(id: number) {
         const user = await this.prisma.user.findUnique({
