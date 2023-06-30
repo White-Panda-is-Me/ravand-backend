@@ -167,6 +167,7 @@ export class UserService{
                 }
             });
             ch.reqid = rel[0].id;
+            log(i ,m_childs.length)
             if(i == (m_childs.length - 1))
                 return m_childs;
         })
