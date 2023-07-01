@@ -87,7 +87,6 @@ export class UserService{
                                                                                                                         <input type="hidden" name="Authorization" value="${token}">
                                                                                                                         <button style="background-color: rgb(44, 51, 64); border-radius: 4px; color: aliceblue; border-style: none; width: 70px; height: 40px; font-size: medium; font-family: sans-serif;" type="submit">Accept!</button>
                                                                                                                     </form>
-                                                                                                                    <p></p>
                                                                                                                     http://ravand.hipoo.ir:5000/users/accept?reqid=${req.id}&Authorization=${token}
                                                                                                                     </body>`
         };
