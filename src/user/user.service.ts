@@ -85,11 +85,11 @@ export class UserService{
         from: 'hlangari1353@gmail.com',
         to: child.email,
         subject: 'Accept request!',
-        html: `<body style="text-align: center;"><p>Hello ${child.fName},</p><p>Your parent, ${user.fName} ${user.lName} has requested you. To accept Click the button Below or if it didn't work click on this link below:</p><form method="get" action="http://ravand.hipoo.ir:5000/users/accept">
+        html: `<body style="text-align: center;"><p>Hello ${child.fName},</p><p>Your parent, ${user.fName} ${user.lName} has requested you. To accept Click the button Below or if it didn't work click on this link below:</p><a href="http://ravand.hipoo.ir:5000/users/accept?reqid=${req.id}&Authorization=${token}">
                                                                                                                         <input type="hidden" name="reqid" value="${req.id}">
                                                                                                                         <input type="hidden" name="Authorization" value="${token}">
                                                                                                                         <button style="background-color: rgb(44, 51, 64); border-radius: 4px; color: aliceblue; border-style: none; width: 70px; height: 40px; font-size: medium; font-family: sans-serif;" type="submit">Accept!</button>
-                                                                                                                    </form>
+                                                                                                                    </a>
                                                                                                                     http://ravand.hipoo.ir:5000/users/accept?reqid=${req.id}&Authorization=${token}
                                                                                                                     </body>`
         };

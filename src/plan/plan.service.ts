@@ -346,9 +346,15 @@ export class PlanService {
     }
 
     async GetChildPlan(dto: ChildPlanDto ,id: number) {
-        const rel = await this.prisma.childreq.findUnique({
+        const child = await this.prisma.user.findUnique({
             where: {
-                id: dto.reqid,
+                email: dto.email
+            }
+        })
+        const rel = await this.prisma.childreq.findFirst({
+            where: {
+                ChildId: child.id,
+                ParentId: id
             },
         });
         if(rel.ParentId == id) {
@@ -363,13 +369,13 @@ export class PlanService {
                 const plan = plans[plans.length - 1];
                 if(!plan)
                     return [];
-                let dto = new PlanDto();
-                dto.blocked = JSON.parse(plan.Tasks.toString()).blocked;
-                dto.start   = JSON.parse(plan.Tasks.toString()).start;
-                dto.end     = JSON.parse(plan.Tasks.toString()).end;
-                dto.tasks   = JSON.parse(plan.Tasks.toString()).tasks;
-                dto.loop    = JSON.parse(plan.Tasks.toString()).loop;
-                return this.DividePlan(dto);
+                let plan_dto = new PlanDto();
+                plan_dto.blocked = JSON.parse(plan.Tasks.toString()).blocked;
+                plan_dto.start   = JSON.parse(plan.Tasks.toString()).start;
+                plan_dto.end     = JSON.parse(plan.Tasks.toString()).end;
+                plan_dto.tasks   = JSON.parse(plan.Tasks.toString()).tasks;
+                plan_dto.loop    = JSON.parse(plan.Tasks.toString()).loop;
+                return this.DividePlan(plan_dto);
             } else {
                 throw new HttpException("The User has not accpeted you request!" ,405);
             }

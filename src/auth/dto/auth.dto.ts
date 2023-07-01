@@ -45,7 +45,7 @@ export class FSDto {
 }
 
 export class ChildPlanDto {
-    @IsNumber()
+    @IsEmail()
     @IsNotEmpty()
-    reqid: number;
+    email: string;
 }
