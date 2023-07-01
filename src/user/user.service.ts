@@ -1,12 +1,9 @@
 import { HttpException, Injectable, Res } from "@nestjs/common";
 import { EditUserDto , LnkChildDto , AcceptChildDto } from "./dto/user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Role } from "@prisma/client";
 import * as nodemailer from "nodemailer";
 import { JwtService } from "@nestjs/jwt";
 import { secret } from "src/auth/auth.const";
-import { join } from "path";
-import { log } from "console";
 
 @Injectable()
 export class UserService{
@@ -157,7 +154,6 @@ export class UserService{
             return null;
         for (let i = 0;i < childs.length;i++) {
             delete childs[i].hash;
-            delete childs[i].role;
             delete childs[i].ParentId;
         }
         return childs;
