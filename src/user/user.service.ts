@@ -154,13 +154,14 @@ export class UserService{
             }
         });
         if(!childs)
-            return null;
-        for(let i = 0;i < childs.length;i++) {
-            delete childs[i].hash;
-            delete childs[i].role;
-            delete childs[i].ParentId;
-            if(i == (childs.length - 1))
-                return childs;
-        }
+            return [];
+        // for(let i = 0;i < childs.length;i++) {
+        //     delete childs[i].hash;
+        //     delete childs[i].role;
+        //     delete childs[i].ParentId;
+        //     if(i == (childs.length - 1))
+        //         return childs;
+        // }
+        return childs;
     }
 }
