@@ -57,7 +57,7 @@ export class PlanService {
         let start2 = moment(start);
         let to = moment(start);
         let diff = 0;
-        let shd_loop = dto.loop;
+        let shd_loop = true;
         let tasks2 = [];
         let blocked2 = [];
         let sorted_tasks = [];
